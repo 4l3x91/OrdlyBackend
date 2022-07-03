@@ -1,0 +1,17 @@
+GET https://localhost:5131/ordly
+###
+GET https://localhost:5131/users
+###
+POST https://localhost:5131/newScore
+content-type: application/json
+
+{
+    "userId": "1",
+    "totalGames": "0",
+    "totalWins": "0",
+    "currentStreak": "0",
+    "longestStreak": "0",
+    "failedGames": "0"
+}
+
+DELETE https://localhost:5131/user/1
