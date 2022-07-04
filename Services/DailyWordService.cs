@@ -26,12 +26,8 @@ public class WorkerService : BackgroundService
     {
         if (_DateLastRun < DateTime.Now.Date)
         {
-            Console.WriteLine(DateTime.Now.Date);
-            Console.WriteLine("\n");
-            Console.WriteLine(_DateLastRun);
             _DateLastRun = DateTime.Now.Date;
-            Console.WriteLine("\n");
-            Console.WriteLine(_DateLastRun);
+            await SetDailyWord();
         }
     }
 }

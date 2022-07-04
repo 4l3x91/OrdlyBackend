@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Models;
 using ApplicationCore.Services;
+using Infrastructure.Data;
 
 namespace WebApi.Controllers.V1;
 
@@ -9,17 +10,14 @@ namespace WebApi.Controllers.V1;
 
 public class OrdlyController : ControllerBase
 {
-    // OrdlyContext _context;
+    OrdlyContext _context;
 
-    // public OrdlyController()
-    // {
-    //     _context = context;
-    // }
+    public OrdlyController(OrdlyContext context) => _context = context;
 
     [HttpGet]
     public async Task<ActionResult<Word>> GetWord()
     {
-        var word = new { id = "1", name = "fläck" };
+        var word = new { id = "1", name = "klack" };
         return Ok(word);
     }
 }
