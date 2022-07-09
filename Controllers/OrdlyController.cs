@@ -17,7 +17,7 @@ public class OrdlyController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<Word>> GetWord()
     {
-        var TodaysDate = DateTime.Today.ToShortDateString();
+        var TodaysDate = DateTime.Now.ToString("yyyy-MM-dd");
         var word = _context.Words.Where(x => x.Date == TodaysDate);
         return Ok(word);
     }
