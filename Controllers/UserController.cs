@@ -23,6 +23,14 @@ public class UserController : ControllerBase
         return CreatedAtAction(nameof(GetUserByIdAsync), new { userId = user.UserId }, null);
     }
 
+    [HttpPut]
+    public async Task<ActionResult<User>> UpdateUser(User user)
+    {
+        _context.Users.Update(user);
+        await _context.SaveChangesAsync();
+        return Ok(user);
+    }
+
     [HttpGet("{userId}")]
     [ActionName("GetUserByIdAsync")]
     public async Task<ActionResult<User>> GetUserByIdAsync(int userId)
