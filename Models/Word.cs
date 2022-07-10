@@ -2,12 +2,15 @@ namespace WebApi.Models;
 
 public class Word
 {
-    public string Id { get; set; }
+    public int WordId { get; set; }
     public string Name { get; set; }
+    public string Date { get; set; }
     public Word() { }
-    public Word(string id, string name)
+    public Word(int wordId, string name, string date)
     {
-        Id = id;
-        Name = Name;
+        WordId = wordId;
+        Name = name;
+        Date = date;
+
     }
 }

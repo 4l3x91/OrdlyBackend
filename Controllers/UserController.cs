@@ -20,14 +20,14 @@ public class UserController : ControllerBase
         _context.Users.Add(user);
         await _context.SaveChangesAsync();
 
-        return CreatedAtAction(nameof(GetUserByIdAsync), new { id = user.Id }, null);
+        return CreatedAtAction(nameof(GetUserByIdAsync), new { userId = user.UserId }, null);
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("{userId}")]
     [ActionName("GetUserByIdAsync")]
-    public async Task<ActionResult<User>> GetUserByIdAsync(int id)
+    public async Task<ActionResult<User>> GetUserByIdAsync(int userId)
     {
-        var user = await _context.Users.FindAsync(id);
+        var user = await _context.Users.FindAsync(userId);
         if (user == null) return NotFound();
         else return Ok(user);
     }
@@ -37,7 +37,7 @@ public class UserController : ControllerBase
 
     public async Task<ActionResult<User>> GetLatestUserByIdAsync()
     {
-        var latestUser = _context.Users.OrderByDescending(x => x.Id).FirstOrDefault();
+        var latestUser = _context.Users.OrderByDescending(x => x.UserId).FirstOrDefault();
         return latestUser;
     }
 }

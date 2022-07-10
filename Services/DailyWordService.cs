@@ -1,5 +1,7 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Mvc.Controllers;
+using WebApi.Controllers.V1;
 
 namespace ApplicationCore.Services;
 
