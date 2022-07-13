@@ -2,16 +2,16 @@ GET https://localhost:5131/ordly
 ###
 GET https://localhost:5131/users
 ###
-POST https://localhost:5131/newScore
-content-type: application/json
+PUT https://localhost:7083/api/v1/User
+content-type: application/json; charset=utf-8
 
 {
-    "userId": "1",
-    "totalGames": "0",
-    "totalWins": "0",
-    "currentStreak": "0",
-    "longestStreak": "0",
-    "failedGames": "0"
+  "userId": 0,
+  "totalGames": "1",
+  "totalWins": "1",
+  "currentStreak": "1",
+  "longestStreak": "1"
 }
 
+###
 DELETE https://localhost:5131/user/1

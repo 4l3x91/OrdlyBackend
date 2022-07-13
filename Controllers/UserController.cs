@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using WebApi.Models;
 using ApplicationCore.Services;
 using Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace WebApi.Controllers.V1;
 
@@ -24,9 +25,11 @@ public class UserController : ControllerBase
     }
 
     [HttpPut]
-    public async Task<ActionResult<User>> UpdateUser(User user)
+    public async Task<ActionResult<User>> AddOrUpdateUser(User user)
     {
-        _context.Users.Update(user);
+        if (_context.Users.Any(e => e.UserId == user.UserId)) _context.Entry(user).State = EntityState.Modified;
+        else _context.Entry(user).State = EntityState.Added;
+
         await _context.SaveChangesAsync();
         return Ok(user);
     }

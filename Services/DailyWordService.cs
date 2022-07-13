@@ -2,6 +2,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using WebApi.Controllers.V1;
+using WebApi.Models;
 
 namespace ApplicationCore.Services;
 
@@ -26,10 +27,6 @@ public class WorkerService : BackgroundService
 
     public async Task SetDailyWord()
     {
-        if (_DateLastRun < DateTime.Now.Date)
-        {
-            _DateLastRun = DateTime.Now.Date;
-            await SetDailyWord();
-        }
+        if (_DateLastRun < DateTime.Now.Date) _DateLastRun = DateTime.Now.Date;
     }
 }
