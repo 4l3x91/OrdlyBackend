@@ -1,8 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using WebApi.Models;
-using WebApi;
+using OrdlyBackend.Models;
 
-namespace Infrastructure.Data
+namespace OrdlyBackend.Infrastructure.Data
 {
     public static class OrdlyContextSeed
     {
@@ -12,27 +11,26 @@ namespace Infrastructure.Data
                 serviceProvider.GetRequiredService<
                     DbContextOptions<OrdlyContext>>()))
             {
-                if (!context.Users.Any()) await GenerateUsers(context);   // DB has been seeded
-                if(!context.Words.Any()) await GenerateWords(context);   // DB has been seeded
+                //if (!context.Users.Any()) await GenerateUsers(context);   // DB has been seeded
+                if (context.Words.Count() == 0) await GenerateWords(context);   // DB has been seeded
             }
         }
         private static async Task GenerateWords(OrdlyContext context)
         {
-            
+
             string[] lines = File.ReadAllLines("words.txt");
-            int idCounter = 1;
 
             for (int i = 0; i < lines.Length; i++)
             {
-                Word newWord = new Word {
-                    WordId = idCounter,
+                Word newWord = new Word
+                {
+                    WordId = 0,
                     Name = lines[i],
-                    Date = DateTime.Today.AddDays(idCounter).ToShortDateString()
+                    Category = "basic"
                 };
-                idCounter++;
                 context.Add(newWord);
             }
-                await context.SaveChangesAsync();
+            await context.SaveChangesAsync();
         }
         private static async Task GenerateUsers(OrdlyContext context)
         {
@@ -55,7 +53,7 @@ namespace Infrastructure.Data
                                 }
                             );
 
-            context.SaveChangesAsync();
+            await context.SaveChangesAsync();
         }
     }
 }

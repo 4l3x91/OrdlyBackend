@@ -1,9 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
-using WebApi.Models;
-using ApplicationCore.Services;
-using Infrastructure.Data;
+using OrdlyBackend.Infrastructure.Data;
+using OrdlyBackend.Models;
 
-namespace WebApi.Controllers.V1;
+namespace OrdlyBackend.Controllers;
 
 [ApiController]
 [Route("/api/v1/[controller]")]
@@ -17,8 +16,7 @@ public class OrdlyController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<Word>> GetWord()
     {
-        var TodaysDate = DateTime.Now.ToString("yyyy-MM-dd");
-        var word = _context.Words.Where(x => x.Date == TodaysDate);
+        var word = _context.DailyWords.OrderBy(x => x.DailyWordId).Last();
         return Ok(word);
     }
 }
