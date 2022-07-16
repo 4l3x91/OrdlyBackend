@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>c90529a1-fe90-472a-9944-fa9996a99f36</UserSecretsId>
     <ApplicationInsightsResourceId>/subscriptions/9dbae4cf-d7ec-4b56-a7a3-af2f125db47a/resourceGroups/OrdlyBackend20220713231604ResourceGroup/providers/microsoft.insights/components/OrdlyBackend20220713231604</ApplicationInsightsResourceId>
