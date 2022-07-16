@@ -1,32 +1,28 @@
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Mvc.Controllers;
-using WebApi.Controllers.V1;
-using WebApi.Models;
+﻿using OrdlyBackend.Infrastructure.Data;
+using OrdlyBackend.Interfaces;
+using OrdlyBackend.Models;
+using System.Linq;
 
-namespace ApplicationCore.Services;
-
-public class WorkerService : BackgroundService
+namespace OrdlyBackend.Services
 {
-    private DateTime _DateLastRun;
-    private readonly IServiceScopeFactory _serviceScopeFactory;
-    public WorkerService(IServiceScopeFactory serviceScopeFactory)
+    public class DailyWordService : IDailyWordService
     {
-        _serviceScopeFactory = serviceScopeFactory;
-        _DateLastRun = DateTime.Now.Date;
-    }
-
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-    {
-        while (!stoppingToken.IsCancellationRequested)
+        OrdlyContext _context;
+        public DailyWordService(OrdlyContext context)
         {
-            await SetDailyWord();
-            await Task.Delay(100);
+            _context = context;
         }
-    }
 
-    public async Task SetDailyWord()
-    {
-        if (_DateLastRun < DateTime.Now.Date) _DateLastRun = DateTime.Now.Date;
+        public async Task<bool> AddNewDailyWord(DailyWord newDaily)
+        {
+            _context.DailyWords.AddAsync(newDaily);
+            return await _context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<List<DailyWord>> GetLatestDailys()
+        {
+            return await Task.Run(()=> _context.DailyWords.Take(30).ToList());
+        }
+
     }
 }

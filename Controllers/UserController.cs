@@ -1,10 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
-using WebApi.Models;
-using ApplicationCore.Services;
-using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using OrdlyBackend.Infrastructure.Data;
+using OrdlyBackend.Models;
 
-namespace WebApi.Controllers.V1;
+namespace OrdlyBackend.Controllers;
 
 [ApiController]
 [Route("/api/v1/[controller]")]
@@ -21,7 +20,7 @@ public class UserController : ControllerBase
         _context.Users.Add(user);
         await _context.SaveChangesAsync();
 
-        return CreatedAtAction(nameof(GetUserByIdAsync), new { userId = user.UserId }, null);
+        return CreatedAtAction(nameof(GetUserByIdAsync), new { userId = user.UserId }, user);
     }
 
     [HttpPut]
@@ -48,7 +47,7 @@ public class UserController : ControllerBase
 
     public async Task<ActionResult<User>> GetLatestUserByIdAsync()
     {
-        var latestUser = _context.Users.OrderByDescending(x => x.UserId).FirstOrDefault();
+        var latestUser = await _context.Users.OrderByDescending(x => x.UserId).FirstOrDefaultAsync();
         return latestUser;
     }
 }

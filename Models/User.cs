@@ -1,4 +1,4 @@
-namespace WebApi.Models;
+namespace OrdlyBackend.Models;
 
 public class User
 {
