@@ -20,7 +20,7 @@ public class WorkerService : BackgroundService
         while (!stoppingToken.IsCancellationRequested)
         {
             if(!inProgress) await SetDailyWordAsync();
-            await Task.Delay(100);
+            await Task.Delay(5000);
         }
     }
 
