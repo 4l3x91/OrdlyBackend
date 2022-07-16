@@ -16,7 +16,7 @@ public class OrdlyController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<Word>> GetWord()
     {
-        var word = _context.Words.OrderBy(x => x.WordId).Last() ;
+        var word = _context.DailyWords.OrderBy(x => x.DailyWordId).Last();
         return Ok(word);
     }
 }
