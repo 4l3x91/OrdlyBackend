@@ -21,7 +21,7 @@ namespace OrdlyBackend.Services
 
         public async Task<List<DailyWord>> GetLatestDailys()
         {
-            return await Task.Run(()=> _context.DailyWords.Take(30).ToList());
+            return await Task.Run(()=> _context.DailyWords.TakeLast(30).ToList());
         }
 
     }
