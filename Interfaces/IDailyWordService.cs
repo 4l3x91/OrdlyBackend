@@ -4,7 +4,7 @@ namespace OrdlyBackend.Interfaces
 {
     public interface IDailyWordService
     {
-        Task<bool> AddNewDailyWord(DailyWord newDaily);
-        Task<List<DailyWord>> GetLatestDailys();
+        Task<bool> AddNewDailyWordAsync(DailyWord newDaily);
+        Task<List<DailyWord>> GetLatestDailysAsync();
     }
 }
