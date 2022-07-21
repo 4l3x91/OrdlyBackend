@@ -1,38 +1,54 @@
 using Azure.Identity;
-using Azure.Security.KeyVault.Secrets;
 using Microsoft.EntityFrameworkCore;
+using OrdlyBackend.Controllers;
 using OrdlyBackend.Infrastructure.Data;
 using OrdlyBackend.Interfaces;
 using OrdlyBackend.Services;
+using OrdlyBackend.Utilities;
 
 var builder = WebApplication.CreateBuilder(args);
-var keyVaultEndpoint = new Uri(Environment.GetEnvironmentVariable("VaultUri"));
-builder.Configuration.AddAzureKeyVault(keyVaultEndpoint, new DefaultAzureCredential());
+builder.Configuration.AddAzureKeyVault(AzureUtils.GetUri(), new DefaultAzureCredential());
 
-var client = new SecretClient(keyVaultEndpoint, new DefaultAzureCredential());
-var secret = client.GetSecret("Ordly--DB").Value.Value;
+var secret = AzureUtils.GetSecretFromVault("Ordly--DB");
 
 builder.Services.AddDbContext<OrdlyContext>(options =>
 options.UseSqlServer(secret));
 
-builder.Services.AddHealthChecks();
-builder.Services.AddCors();
-builder.Services.AddScoped<IDailyWordService, DailyWordService>();
-builder.Services.AddScoped<IWordService, WordService>();
-builder.Services.AddHostedService<WorkerService>();
+//builder.Configuration.AddAzureAppConfiguration(options =>
+//{
+//    options.Connect(Environment.GetEnvironmentVariable("AppConfig"))
+//    .ConfigureRefresh(refresh =>
+//        {
+//            refresh.Register("Game:Settings:Sentinel", refreshAll: true).SetCacheExpiration(new TimeSpan(0, 0, 30));
+//        });
+//});
+//builder.Services.Configure<Settings>(builder.Configuration.GetSection("Game:Settings:WordCategory"));
+
+
+Settings settings = new()
+{
+    WordCategory = "all"
+};
 
 // Add services to the container.
+builder.Services.AddHealthChecks();
+builder.Services.AddCors();
+builder.Services.AddSingleton<Settings>();
+builder.Services.AddScoped<IDailyWordService, DailyWordService>();
+builder.Services.AddScoped<IWordService, WordService>();
+builder.Services.AddScoped<IGameService, GameService>();
+builder.Services.AddHostedService<WorkerService>();
+
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+//builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
 
 //var connectionString = builder.Configuration.GetConnectionString("OrdlyContext") ?? "Data Source=Ordly.db";
 //builder.Services.AddSqlite<OrdlyContext>(connectionString);
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-//builder.Services.AddSwaggerGen();
 
-builder.Services.AddApplicationInsightsTelemetry(builder.Configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"]);
-
+builder.Services.AddApplicationInsightsTelemetry((options) => options.ConnectionString = builder.Configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"]);
 var app = builder.Build();
 
 app.MapHealthChecks("/health");
@@ -45,17 +61,17 @@ app.MapHealthChecks("/health");
 //    OrdlyContextSeed.Initialize(services);
 //}
 
-
-// Configure the HTTP request pipeline.
+//Configure the HTTP request pipeline.
 //if (app.Environment.IsDevelopment())
 //{
-// app.UseSwagger();
+//app.UseSwagger();
 //app.UseSwaggerUI();
 //}
 
-
 app.UseHttpsRedirection();
 app.UseCors(x => x.AllowAnyMethod().AllowAnyHeader().AllowAnyOrigin());
+
+//app.UseAzureAppConfiguration();
 
 app.UseAuthorization();
 

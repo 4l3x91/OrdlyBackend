@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using OrdlyBackend.DTOs;
 using OrdlyBackend.Infrastructure.Data;
 using OrdlyBackend.Models;
+using OrdlyBackend.Services;
+using OrdlyBackend.Interfaces;
 
 namespace OrdlyBackend.Controllers;
 
@@ -10,9 +12,13 @@ namespace OrdlyBackend.Controllers;
 
 public class OrdlyController : ControllerBase
 {
-    OrdlyContext _context;
+    private OrdlyContext _context;
+    private IGameService _gameService;
 
-    public OrdlyController(OrdlyContext context) => _context = context;
+    public OrdlyController(OrdlyContext context, IGameService gameService) {
+        _context = context;
+        _gameService = gameService;
+    }
 
     [HttpGet]
     public async Task<ActionResult<DailyGame>> GetDailyGame()
@@ -26,5 +32,11 @@ public class OrdlyController : ControllerBase
         };
 
         return Ok(dailyGame);
+    }
+
+    [HttpGet("/guess")]
+    public async Task<ActionResult<GuessResponse>> GetGuessResult([FromBody]GuessRequest request)
+    {
+        return await _gameService.GetGuessResultAsync(request);
     }
 }

@@ -6,5 +6,6 @@ namespace OrdlyBackend.Interfaces
     {
         Task<bool> AddNewDailyWordAsync(DailyWord newDaily);
         Task<List<DailyWord>> GetLatestDailysAsync();
+        Task<DailyWord> GetLatestDailyAsync();
     }
 }

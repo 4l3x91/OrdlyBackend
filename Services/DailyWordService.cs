@@ -20,6 +20,11 @@ namespace OrdlyBackend.Services
             return await _context.SaveChangesAsync() > 0;
         }
 
+        public Task<DailyWord> GetLatestDailyAsync()
+        {
+            return _context.DailyWords.LastAsync();
+        }
+
         public async Task<List<DailyWord>> GetLatestDailysAsync()
         {
             return await _context.DailyWords.OrderByDescending(x => x.DailyWordId).Take(30).ToListAsync();

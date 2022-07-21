@@ -1,6 +1,7 @@
 ﻿using OrdlyBackend.Interfaces;
 using OrdlyBackend.Models;
 using OrdlyBackend.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace OrdlyBackend.Services
 {
@@ -13,6 +14,11 @@ namespace OrdlyBackend.Services
         }
 
         public OrdlyContext Context { get; }
+
+        public async Task<List<Word>> GetAllWordsAsync()
+        {
+            return await _context.Words.ToListAsync();
+        }
 
         public async Task<Word> GetRandomWordAsync()
         {
