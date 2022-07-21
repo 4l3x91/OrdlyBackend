@@ -37,6 +37,6 @@ public class OrdlyController : ControllerBase
     [HttpPost("/guess")]
     public async Task<ActionResult<GuessResponse>> GetGuessResult([FromBody] GuessRequest request)
     {
-        return await _gameService.GetGuessResultAsync(request);
+        return Ok(await _gameService.GetGuessResultAsync(request));
     }
 }
