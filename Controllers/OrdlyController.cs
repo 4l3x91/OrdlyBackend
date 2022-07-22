@@ -15,7 +15,8 @@ public class OrdlyController : ControllerBase
     private OrdlyContext _context;
     private IGameService _gameService;
 
-    public OrdlyController(OrdlyContext context, IGameService gameService) {
+    public OrdlyController(OrdlyContext context, IGameService gameService)
+    {
         _context = context;
         _gameService = gameService;
     }
@@ -34,9 +35,10 @@ public class OrdlyController : ControllerBase
         return Ok(dailyGame);
     }
 
-    [HttpPost("/guess")]
+    [HttpPost("guess")]
     public async Task<ActionResult<GuessResponse>> GetGuessResult([FromBody] GuessRequest request)
     {
-        return Ok(await _gameService.GetGuessResultAsync(request));
+        var result = await _gameService.GetGuessResultAsync(request);
+        return Ok(result);
     }
 }

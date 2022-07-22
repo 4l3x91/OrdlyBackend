@@ -6,7 +6,7 @@ using OrdlyBackend.Interfaces;
 using OrdlyBackend.Services;
 using OrdlyBackend.Utilities;
 
-var builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddAzureKeyVault(AzureUtils.GetUri(), new DefaultAzureCredential());
 
 var secret = AzureUtils.GetSecretFromVault("Ordly--DB");
@@ -30,7 +30,6 @@ Settings settings = new()
     WordCategory = "all"
 };
 
-// Add services to the container.
 builder.Services.AddHealthChecks();
 builder.Services.AddCors();
 builder.Services.AddSingleton<Settings>();
@@ -39,14 +38,22 @@ builder.Services.AddScoped<IWordService, WordService>();
 builder.Services.AddScoped<IGameService, GameService>();
 builder.Services.AddHostedService<WorkerService>();
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-//builder.Services.AddSwaggerGen();
+// Add services to the container.
 builder.Services.AddControllers();
 
 //var connectionString = builder.Configuration.GetConnectionString("OrdlyContext") ?? "Data Source=Ordly.db";
 //builder.Services.AddSqlite<OrdlyContext>(connectionString);
 
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(config =>
+{
+    config.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+    {
+        Title = "OrdlyBackend",
+        Version = "v1"
+    });
+});
 
 builder.Services.AddApplicationInsightsTelemetry((options) => options.ConnectionString = builder.Configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"]);
 var app = builder.Build();
@@ -62,11 +69,11 @@ app.MapHealthChecks("/health");
 //}
 
 //Configure the HTTP request pipeline.
-//if (app.Environment.IsDevelopment())
-//{
-//app.UseSwagger();
-//app.UseSwaggerUI();
-//}
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
 app.UseHttpsRedirection();
 app.UseCors(x => x.AllowAnyMethod().AllowAnyHeader().AllowAnyOrigin());
