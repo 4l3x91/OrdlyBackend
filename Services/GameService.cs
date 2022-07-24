@@ -32,6 +32,44 @@ namespace OrdlyBackend.Services
 
         }
 
+        public async Task<DTOs.v2.GuessResponse2> GetFullGuessResultAsync(GuessRequest request)
+        {
+            var daily = await _dailyWordService.GetLatestDailyAsync();
+            var allWords = await _wordService.GetAllWordsAsync();
+            if(ValidateGuess(request.Guess, allWords))
+            {
+                var result = GenerateResult(request.Guess, GetWord(daily.WordId, allWords));
+                DTOs.v2.GuessResponse2 guessResonse = new()
+                {
+                    DailyGameId = daily.DailyWordId,
+                    Result = result,
+                    isCompleted = result.All((x) => x == 2),
+                    User = new DTOs.v2.UserDTO()
+                    {
+                        //FIXME Make Placeholders get acutual data.
+                        Id = 1,
+                        Rating = 850,
+                        Rank = "Gold"
+                    }
+
+                };
+
+                return guessResonse;
+            }
+
+            return null;
+        }
+
+
+
+
+
+
+
+
+
+
+
         private int[] GenerateResult(string guess, string dailyWord)
         {
             var result = new int[5];
