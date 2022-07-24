@@ -53,6 +53,7 @@ builder.Services.AddSwaggerGen(config =>
         Title = "OrdlyBackend",
         Version = "v1"
     });
+    config.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
 });
 
 builder.Services.AddApplicationInsightsTelemetry((options) => options.ConnectionString = builder.Configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"]);
@@ -71,8 +72,9 @@ app.MapHealthChecks("/health");
 //Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    app.UseDeveloperExceptionPage();
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c=> c.SwaggerEndpoint("./v1/swagger.json", "OrdlyAPI V1")); //originally "./swagger/v1/swagger.json");
 }
 
 app.UseHttpsRedirection();
