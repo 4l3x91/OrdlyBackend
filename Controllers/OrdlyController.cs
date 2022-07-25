@@ -41,4 +41,11 @@ public class OrdlyController : ControllerBase
         var result = await _gameService.GetGuessResultAsync(request);
         return Ok(result);
     }
+
+    [HttpGet("currentTime")]
+    public ActionResult<DateTime> GetTime()
+    {
+        var time = DateTime.Now;
+        return Ok(time);
+    }
 }
