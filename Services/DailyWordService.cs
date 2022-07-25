@@ -1,4 +1,5 @@
-﻿using OrdlyBackend.Infrastructure.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using OrdlyBackend.Infrastructure.Data;
 using OrdlyBackend.Interfaces;
 using OrdlyBackend.Models;
 using System.Linq;
@@ -13,15 +14,20 @@ namespace OrdlyBackend.Services
             _context = context;
         }
 
-        public async Task<bool> AddNewDailyWord(DailyWord newDaily)
+        public async Task<bool> AddNewDailyWordAsync(DailyWord newDaily)
         {
-            _context.DailyWords.AddAsync(newDaily);
+            await _context.DailyWords.AddAsync(newDaily);
             return await _context.SaveChangesAsync() > 0;
         }
 
-        public async Task<List<DailyWord>> GetLatestDailys()
+        public async Task<DailyWord> GetLatestDailyAsync()
         {
-            return await Task.Run(()=> _context.DailyWords.TakeLast(30).ToList());
+            return await _context.DailyWords.OrderBy(x => x.DailyWordId).LastAsync();
+        }
+
+        public async Task<List<DailyWord>> GetLatestDailysAsync()
+        {
+            return await _context.DailyWords.OrderByDescending(x => x.DailyWordId).Take(30).ToListAsync();
         }
 
     }

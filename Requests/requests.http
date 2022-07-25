@@ -2,7 +2,7 @@ GET https://localhost:5131/ordly
 ###
 GET https://localhost:5131/users
 ###
-PUT https://localhost:7083/api/v1/User
+PUT https://localhost:20396/api/v1/Ordly/guess
 content-type: application/json; charset=utf-8
 
 {
@@ -15,3 +15,13 @@ content-type: application/json; charset=utf-8
 
 ###
 DELETE https://localhost:5131/user/1
+
+###
+POST https://localhost:20396/api/v1/Ordly/guess
+content-type: application/json; charset=utf-8
+
+{
+  "Guess": "tusse"
+}
+
+###

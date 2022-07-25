@@ -1,14 +1,15 @@
 using Microsoft.AspNetCore.Mvc;
-using OrdlyBackend.DTOs;
+using OrdlyBackend.DTOs.v2;
 using OrdlyBackend.Infrastructure.Data;
 using OrdlyBackend.Models;
 using OrdlyBackend.Services;
 using OrdlyBackend.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
-namespace OrdlyBackend.Controllers;
+namespace OrdlyBackend.Controllers.v2;
 
 [ApiController]
-[Route("/api/v1/[controller]")]
+[Route("/api/v2/[controller]")]
 
 public class OrdlyController : ControllerBase
 {
@@ -22,23 +23,21 @@ public class OrdlyController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<DailyGame>> GetDailyGame()
+    public async Task<ActionResult<DailyGame2>> GetDailyGame()
     {
-        var dailyWord = _context.DailyWords.OrderBy(x => x.DailyWordId).Last();
-        var word = await _context.Words.FindAsync(dailyWord.WordId);
-        var dailyGame = new DailyGame()
+        var dailyWord = await _context.DailyWords.OrderBy(x => x.DailyWordId).LastAsync();
+        var dailyGame = new DailyGame2()
         {
-            DailyGameId = dailyWord.DailyWordId,
-            Word = word.Name
+            DailyGameId = dailyWord.DailyWordId
         };
 
         return Ok(dailyGame);
     }
 
     [HttpPost("guess")]
-    public async Task<ActionResult<GuessResponse>> GetGuessResult([FromBody] GuessRequest request)
+    public async Task<ActionResult<GuessResponse2>> GetGuessResult([FromBody] DTOs.GuessRequest request)
     {
-        var result = await _gameService.GetGuessResultAsync(request);
+        var result = await _gameService.GetFullGuessResultAsync(request);
         return Ok(result);
     }
 }

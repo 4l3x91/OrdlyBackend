@@ -2,7 +2,7 @@
 
 namespace OrdlyBackend.Services
 {
-    public class SampleHealthCheck : IHealthCheck
+    public class HealthCheck : IHealthCheck
     {
         public Task<HealthCheckResult> CheckHealthAsync(
             HealthCheckContext context, CancellationToken cancellationToken = default)
