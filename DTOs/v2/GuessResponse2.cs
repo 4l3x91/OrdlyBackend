@@ -4,6 +4,5 @@
     {
         public int[] Result { get; set; }
         public bool isCompleted { get; set; }
-        public UserDTO User { get; set; }
     }
 }

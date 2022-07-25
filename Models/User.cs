@@ -3,6 +3,7 @@ namespace OrdlyBackend.Models;
 public class User
 {
     public int UserId { get; set; }
+    //public Guid UserKey { get; set; }
     public string TotalGames { get; set; }
     public string TotalWins { get; set; }
     public string CurrentStreak { get; set; }

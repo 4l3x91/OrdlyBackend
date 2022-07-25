@@ -36,6 +36,7 @@ builder.Services.AddSingleton<Settings>();
 builder.Services.AddScoped<IDailyWordService, DailyWordService>();
 builder.Services.AddScoped<IWordService, WordService>();
 builder.Services.AddScoped<IGameService, GameService>();
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddHostedService<WorkerService>();
 
 // Add services to the container.
