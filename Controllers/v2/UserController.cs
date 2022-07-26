@@ -21,29 +21,26 @@ public class UserController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<User>> PostUser(User user)
+    public async Task<ActionResult<User>> PostUser()
     {
-        var newUser = await _userService.CreateUserAsync();
+        var user = await _userService.CreateUserAsync();
 
-        return CreatedAtAction(nameof(GetUserByIdAsync), new { userId = newUser.UserId }, newUser);
+        return CreatedAtAction(nameof(GetUserByIdAsync), new { userId = user.UserId }, user);
     }
 
     [HttpPut]
     public async Task<ActionResult<User>> AddOrUpdateUser(User user)
     {
-        if (_context.Users.Any(e => e.UserId == user.UserId)) _context.Entry(user).State = EntityState.Modified;
-        else _context.Entry(user).State = EntityState.Added;
-
-        await _context.SaveChangesAsync();
-        return Ok(user);
+        var updatedUser = await _userService.AddOrUpdateUserAsync(user);
+        return Ok(updatedUser);
     }
 
     [HttpGet("{userId}")]
     [ActionName("GetUserByIdAsync")]
     public async Task<ActionResult<User>> GetUserByIdAsync(int userId)
     {
-        var user = await _context.Users.FindAsync(userId);
-        if (user == null) return NotFound();
+        var user = await _userService.GetUserByIdAsync(userId);
+        if (user == null) return NoContent();
         else return Ok(user);
     }
 
@@ -51,7 +48,7 @@ public class UserController : ControllerBase
     [ActionName("GetLatestUserByIdAsync")]
     public async Task<ActionResult<User>> GetLatestUserByIdAsync()
     {
-        var latestUser = await _context.Users.OrderByDescending(x => x.UserId).FirstOrDefaultAsync();
+        var latestUser = await _userService.GetLatestUserByIdAsync();
         return latestUser;
     }
 }

@@ -18,7 +18,7 @@ public class UserService : IUserService
     {
         User user = new()
         {
-            UserKey = new Guid()
+            UserKey = Guid.NewGuid()
         };
         _context.Users.Add(user);
         await _context.SaveChangesAsync();
