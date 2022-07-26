@@ -11,15 +11,14 @@ namespace OrdlyBackend.Controllers.v2;
 
 public class UserController : ControllerBase
 {
-    OrdlyContext _context;
-    IUserService _userService;
-
+    private OrdlyContext _context;
+    private IUserService _userService;
 
     public UserController(OrdlyContext context, IUserService userService)
     {
         _context = context;
-
-    } 
+        _userService = userService;
+    }
 
     [HttpPost]
     public async Task<ActionResult<User>> PostUser(User user)
@@ -50,7 +49,6 @@ public class UserController : ControllerBase
 
     [HttpGet("latestUser")]
     [ActionName("GetLatestUserByIdAsync")]
-
     public async Task<ActionResult<User>> GetLatestUserByIdAsync()
     {
         var latestUser = await _context.Users.OrderByDescending(x => x.UserId).FirstOrDefaultAsync();

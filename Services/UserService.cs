@@ -16,7 +16,10 @@ public class UserService : IUserService
 
     public async Task<User> CreateUserAsync()
     {
-        User user = new();
+        User user = new()
+        {
+            UserKey = new Guid()
+        };
         _context.Users.Add(user);
         await _context.SaveChangesAsync();
         return user;

@@ -2,9 +2,9 @@
 {
     public class UserGame
     {
-        int Id { get; set; }
-        int UserId { get; set; }
-        int GameId { get; set; }
-        bool isCompleted { get; set; }
+        public int UserGameId { get; set; }
+        public int UserId { get; set; }
+        public int DailyWordId { get; set; }
+        public bool isCompleted { get; set; }
     }
 }

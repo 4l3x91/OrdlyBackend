@@ -11,7 +11,6 @@ namespace OrdlyBackend.Infrastructure.Data
                 serviceProvider.GetRequiredService<
                     DbContextOptions<OrdlyContext>>()))
             {
-                //if (!context.Users.Any()) await GenerateUsers(context);   // DB has been seeded
                 if (context.Words.Count() == 0) await GenerateWords(context);   // DB has been seeded
             }
         }
@@ -32,28 +31,6 @@ namespace OrdlyBackend.Infrastructure.Data
             }
             await context.SaveChangesAsync();
         }
-        private static async Task GenerateUsers(OrdlyContext context)
-        {
-            context.Users.AddRange(
-                                new User
-                                {
-                                    UserId = 1,
-                                    TotalGames = "4",
-                                    TotalWins = "2",
-                                    CurrentStreak = "2",
-                                    LongestStreak = "2"
-                                },
-                                new User
-                                {
-                                    UserId = 2,
-                                    TotalGames = "5",
-                                    TotalWins = "4",
-                                    CurrentStreak = "3",
-                                    LongestStreak = "3"
-                                }
-                            );
-
-            await context.SaveChangesAsync();
-        }
+    
     }
 }

@@ -2,7 +2,12 @@
 
 public class Guess
 {
-    int Id { get; set; }
-    int UserGameId { get; set; }
-    int WordId { get; set; }
+    public int GuessId { get; set; }
+    public int UserGameId { get; set; }
+    public int WordId { get; set; }
+
+    public Guess()
+    {
+
+    }
 }
