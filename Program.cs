@@ -74,6 +74,7 @@ app.MapHealthChecks("/health");
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
+    app.UseDeveloperExceptionPage();
     app.UseSwagger();
     app.UseSwaggerUI(c=> c.SwaggerEndpoint("./v1/swagger.json", "OrdlyAPI V1")); //originally "./swagger/v1/swagger.json");
 }
