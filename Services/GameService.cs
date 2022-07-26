@@ -43,15 +43,7 @@ namespace OrdlyBackend.Services
                 {
                     DailyGameId = daily.DailyWordId,
                     Result = result,
-                    isCompleted = result.All((x) => x == 2),
-                    User = new DTOs.v2.UserDTO()
-                    {
-                        //FIXME Make Placeholders get acutual data.
-                        Id = 1,
-                        Rating = 850,
-                        Rank = "Gold"
-                    }
-
+                    isCompleted = result.All((x) => x == 2)
                 };
 
                 return guessResonse;

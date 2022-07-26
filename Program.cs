@@ -36,6 +36,7 @@ builder.Services.AddSingleton<Settings>();
 builder.Services.AddScoped<IDailyWordService, DailyWordService>();
 builder.Services.AddScoped<IWordService, WordService>();
 builder.Services.AddScoped<IGameService, GameService>();
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddHostedService<WorkerService>();
 
 // Add services to the container.
@@ -73,15 +74,9 @@ app.MapHealthChecks("/health");
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
-    app.UseSwagger();
-    app.UseSwaggerUI(c=> c.SwaggerEndpoint("./v1/swagger.json", "OrdlyAPI V1")); //originally "./swagger/v1/swagger.json");
-}
-//Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
     app.UseDeveloperExceptionPage();
     app.UseSwagger();
-    app.UseSwaggerUI(c=> c.SwaggerEndpoint("./v1/swagger.json", "OrdlyAPI v1")); //originally "./swagger/v1/swagger.json");
+    app.UseSwaggerUI(c=> c.SwaggerEndpoint("./v1/swagger.json", "OrdlyAPI V1")); //originally "./swagger/v1/swagger.json");
 }
 
 app.UseHttpsRedirection();
