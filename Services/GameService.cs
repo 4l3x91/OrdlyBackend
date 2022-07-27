@@ -8,16 +8,20 @@ namespace OrdlyBackend.Services
     {
         private IDailyWordService _dailyWordService;
         private IWordService _wordService;
-        public GameService(IDailyWordService dailyWordService, IWordService wordService)
+        private IUserGameService _userGameService;
+
+
+        public GameService(IDailyWordService dailyWordService, IWordService wordService, IUserGameService userGameService)
         {
             _wordService = wordService;
             _dailyWordService = dailyWordService;
+            _userGameService = userGameService;
         }
 
         public async Task<GuessResponse> GetGuessResultAsync(GuessRequest request)
         {
             DailyWord daily = await _dailyWordService.GetLatestDailyAsync();
-            List<Word> allWords =  await _wordService.GetAllWordsAsync();
+            List<Word> allWords = await _wordService.GetAllWordsAsync();
             if (ValidateGuess(request.Guess, allWords))
             {
                 var result = GenerateResult(request.Guess, GetWord(daily.WordId, allWords));
@@ -36,7 +40,7 @@ namespace OrdlyBackend.Services
         {
             var daily = await _dailyWordService.GetLatestDailyAsync();
             var allWords = await _wordService.GetAllWordsAsync();
-            if(ValidateGuess(request.Guess, allWords))
+            if (ValidateGuess(request.Guess, allWords))
             {
                 var result = GenerateResult(request.Guess, GetWord(daily.WordId, allWords));
                 DTOs.v2.GuessResponse2 guessResonse = new()
@@ -46,20 +50,14 @@ namespace OrdlyBackend.Services
                     isCompleted = result.All((x) => x == 2)
                 };
 
-                return guessResonse;
+                var success = await _userGameService.AddGuessAsync(request, daily, allWords, guessResonse);
+
+                if (success) return null;
+                else return guessResonse;
             }
 
             return null;
         }
-
-
-
-
-
-
-
-
-
 
 
         private int[] GenerateResult(string guess, string dailyWord)
