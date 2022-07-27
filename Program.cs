@@ -39,6 +39,7 @@ builder.Services.AddScoped<IDailyWordService, DailyWordService>();
 builder.Services.AddScoped<IWordService, WordService>();
 builder.Services.AddScoped<IGameService, GameService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IRankService, RankService>();
 builder.Services.AddHostedService<WorkerService>();
 
 builder.Services.AddControllers();
