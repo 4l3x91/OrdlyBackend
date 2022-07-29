@@ -29,7 +29,7 @@ Settings settings = new()
 builder.Services.AddHealthChecks()
    .AddCheck(
             "OrderingDB-check",
-            new SqlHealthCheck(AzureUtils.GetSecretFromVault("Ordly--DB") ?? "Data Source=Ordly.db"),
+            new SqlHealthCheck( "Data Source=Ordly.db"),//AzureUtils.GetSecretFromVault("Ordly--DB") ??
             HealthStatus.Unhealthy,
             new string[] { "orderingdb" });
 // Add services to the container.
@@ -39,6 +39,7 @@ builder.Services.AddScoped<IDailyWordService, DailyWordService>();
 builder.Services.AddScoped<IWordService, WordService>();
 builder.Services.AddScoped<IGameService, GameService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IUserGameService, UserGameService>();
 builder.Services.AddScoped<IRankService, RankService>();
 builder.Services.AddHostedService<WorkerService>();
 

@@ -13,10 +13,5 @@ namespace OrdlyBackend.Models
         {
 
         }
-
-        public static implicit operator UserGame(EntityEntry<UserGame> v)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

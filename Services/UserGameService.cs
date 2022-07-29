@@ -1,4 +1,5 @@
-﻿using OrdlyBackend.DTOs;
+﻿using Microsoft.EntityFrameworkCore;
+using OrdlyBackend.DTOs;
 using OrdlyBackend.DTOs.v2;
 using OrdlyBackend.Infrastructure.Data;
 using OrdlyBackend.Interfaces;
@@ -17,19 +18,7 @@ namespace OrdlyBackend.Services
 
         public async Task<bool> AddGuessAsync(GuessRequest request, DailyWord daily, List<Word> allWords, GuessResponse2 guessResonse)
         {
-            //Skapa om det inte finns ett userGame annars hämtar userGameId
-            var userGame = _context.UserGames.FirstOrDefault(x => x.UserId == request.UserId);
-            if (userGame == null)
-            {
-                UserGame newUG = new()
-                {
-                UserId = request.UserId,
-                DailyWordId = daily.DailyWordId,
-                isCompleted = guessResonse.isCompleted,
-                };
-               
-                userGame = await _context.UserGames.AddAsync(newUG);
-            }
+            UserGame userGame = await GetUserGameAsync(request, daily, guessResonse);
 
             Guess guess = new()
             {
@@ -40,6 +29,50 @@ namespace OrdlyBackend.Services
             await _context.Guesses.AddAsync(guess);
             return await _context.SaveChangesAsync() > 0;
 
+        }
+
+        public async Task<UserGame> GetUserGameByUserIdAsync(int userId)
+        {
+            return await _context.UserGames.FirstOrDefaultAsync(x => x.UserId == userId);
+        }
+
+
+
+
+        private async Task<UserGame> GetUserGameAsync(GuessRequest request, DailyWord daily, GuessResponse2 guessResonse)
+        {
+            var userGame = await GetUserGameByUserIdAsync(request.UserId);
+            if (userGame == null)
+            {
+                userGame = await CreateNewUserGameAsync(request.UserId, daily.DailyWordId, guessResonse.isCompleted);
+            }
+            else if (guessResonse.isCompleted)
+            {
+                await UpdateUserGameStatusAsync(guessResonse.isCompleted, userGame);
+            }
+
+            return userGame;
+        }
+
+        private async Task UpdateUserGameStatusAsync(bool isCompleted, UserGame userGame)
+        {
+            userGame.isCompleted = isCompleted;
+            _context.Update(userGame);
+            await _context.SaveChangesAsync();
+        }
+
+        private async Task<UserGame> CreateNewUserGameAsync(int userId, int dailyWordId, bool isCompleted)
+        {
+            UserGame newUG = new()
+            {
+                UserId = userId,
+                DailyWordId = dailyWordId,
+                isCompleted = isCompleted,
+            };
+
+            await _context.UserGames.AddAsync(newUG);
+            await _context.SaveChangesAsync();
+            return newUG;
         }
     }
 }
