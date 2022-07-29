@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using OrdlyBackend.DTOs;
 using OrdlyBackend.Infrastructure.Data;
 using OrdlyBackend.Interfaces;
 using OrdlyBackend.Models;
@@ -50,5 +51,11 @@ public class UserController : ControllerBase
     {
         var latestUser = await _userService.GetLatestUserByIdAsync();
         return latestUser;
+    }
+
+    [HttpPost("validate")]
+    public async Task<ActionResult<bool>> ValidateUserAsync(BaseUserDTO user)
+    {
+        return Ok(await _userService.ValidateUserAsync(user.UserId, user.UserKey));
     }
 }

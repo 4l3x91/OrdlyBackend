@@ -1,34 +1,45 @@
 using Azure.Identity;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Newtonsoft.Json;
 using OrdlyBackend.Controllers;
+using OrdlyBackend.HealthChecks;
+using OrdlyBackend.HealthChecks.DTOs;
 using OrdlyBackend.Infrastructure.Data;
 using OrdlyBackend.Interfaces;
 using OrdlyBackend.Services;
 using OrdlyBackend.Utilities;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-builder.Configuration.AddAzureKeyVault(AzureUtils.GetUri(), new DefaultAzureCredential());
+//builder.Configuration.AddAzureKeyVault(AzureUtils.GetUri(), new DefaultAzureCredential());
 
-var secret = AzureUtils.GetSecretFromVault("Ordly--DB");
-builder.Services.AddDbContext<OrdlyContext>(options =>
-options.UseSqlServer(secret));
+//var secret = AzureUtils.GetSecretFromVault("Ordly--DB");
+//builder.Services.AddDbContext<OrdlyContext>(options =>
+//options.UseSqlServer(secret));
 
-//var connectionString = builder.Configuration.GetConnectionString("OrdlyContext") ?? "Data Source=Ordly.db";
-//builder.Services.AddSqlite<OrdlyContext>(connectionString);
+var connectionString = builder.Configuration.GetConnectionString("OrdlyContext") ?? "Data Source=Ordly.db";
+builder.Services.AddSqlite<OrdlyContext>(connectionString);
 
 Settings settings = new()
 {
     WordCategory = "all"
 };
-
+//Add HealthChecks
+builder.Services.AddHealthChecks()
+   .AddCheck(
+            "OrderingDB-check",
+            new SqlHealthCheck( "Data Source=Ordly.db"),//AzureUtils.GetSecretFromVault("Ordly--DB") ??
+            HealthStatus.Unhealthy,
+            new string[] { "orderingdb" });
 // Add services to the container.
-builder.Services.AddHealthChecks();
 builder.Services.AddCors();
 builder.Services.AddSingleton<Settings>();
 builder.Services.AddScoped<IDailyWordService, DailyWordService>();
 builder.Services.AddScoped<IWordService, WordService>();
 builder.Services.AddScoped<IGameService, GameService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IUserGameService, UserGameService>();
 builder.Services.AddScoped<IRankService, RankService>();
 builder.Services.AddHostedService<WorkerService>();
 
@@ -47,10 +58,28 @@ builder.Services.AddSwaggerGen(config =>
     config.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
 });
 
-builder.Services.AddApplicationInsightsTelemetry((options) => options.ConnectionString = builder.Configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"]);
+//builder.Services.AddApplicationInsightsTelemetry((options) => options.ConnectionString = builder.Configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"]);
 var app = builder.Build();
 
-app.MapHealthChecks("/health");
+app.MapHealthChecks("/health", new HealthCheckOptions
+{
+    ResponseWriter = async (context, report) =>
+    {
+        context.Response.ContentType = "application/json";
+        var response = new HealthCheckReponse
+        {
+            Status = report.Status.ToString(),
+            HealthChecks = report.Entries.Select(x => new IndividualHealthCheckResponse
+            {
+                Component = x.Key,
+                Status = x.Value.Status.ToString(),
+                Description = x.Value.Description
+            }),
+            HealthCheckDuration = report.TotalDuration
+        };
+        await context.Response.WriteAsync(JsonConvert.SerializeObject(response));
+    }
+});
 
 // Uncomment to seed database with Words
 

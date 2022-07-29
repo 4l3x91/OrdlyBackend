@@ -25,6 +25,12 @@ public class UserService : IUserService
         return user;
     }
 
+    public async Task<bool> ValidateUserAsync(int userId, Guid userKey)
+    {
+        var user = await GetUserByIdAsync(userId);
+        return user.UserKey == userKey;
+    }
+        
     public async Task<User> AddOrUpdateUserAsync(User user)
     {
         if (_context.Users.Any(e => e.UserId == user.UserId)) _context.Entry(user).State = EntityState.Modified;
