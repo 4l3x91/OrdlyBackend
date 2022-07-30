@@ -2,7 +2,7 @@
 
 namespace OrdlyBackend.Models
 {
-    public class UserGame
+    public class UserGame : BaseEntity
     {
         public int UserGameId { get; set; }
         public int UserId { get; set; }

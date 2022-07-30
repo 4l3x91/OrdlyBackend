@@ -38,6 +38,6 @@ public class OrdlyController : ControllerBase
     public async Task<ActionResult<GuessResponse2>> GetGuessResult([FromBody] DTOs.GuessRequest request)
     {
         var result = await _gameService.GetFullGuessResultAsync(request);
-        return Ok(result);
+        return result != null ? Ok(result) : BadRequest();
     }
 }

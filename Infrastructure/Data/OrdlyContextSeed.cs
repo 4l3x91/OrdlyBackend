@@ -16,7 +16,7 @@ namespace OrdlyBackend.Infrastructure.Data
         }
         private static async Task GenerateWords(OrdlyContext context)
         {
-
+            List<Word> words = new List<Word>();
             string[] lines = File.ReadAllLines("words.txt");
 
             for (int i = 0; i < lines.Length; i++)
@@ -25,10 +25,15 @@ namespace OrdlyBackend.Infrastructure.Data
                 {
                     WordId = 0,
                     Name = lines[i],
-                    Category = "basic"
+                    Category = "basic",
+                    RowCreated = DateTime.Now,
+                    RowModified = DateTime.Now,
+                    RowVersion = 1
                 };
-                context.Add(newWord);
+                words.Add(newWord);
+                
             }
+            await context.AddRangeAsync(words);
             await context.SaveChangesAsync();
         }
     

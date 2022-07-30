@@ -1,31 +1,33 @@
-﻿using OrdlyBackend.Interfaces;
-using OrdlyBackend.Models;
+﻿using Microsoft.EntityFrameworkCore;
 using OrdlyBackend.Infrastructure.Data;
-using Microsoft.EntityFrameworkCore;
+using OrdlyBackend.Interfaces;
+using OrdlyBackend.Models;
 
 namespace OrdlyBackend.Services
 {
     public class WordService : IWordService
     {
-        private readonly OrdlyContext _context;
-        public WordService(OrdlyContext context)
-        {
-            _context = context;
-        }
+        private IRepository<Word> _wordRepository;
 
-        public OrdlyContext Context { get; }
+        public WordService(IRepository<Word> wordRepository)
+        {
+            _wordRepository = wordRepository;
+        }
 
         public async Task<List<Word>> GetAllWordsAsync()
         {
-            return await _context.Words.ToListAsync();
+            return await _wordRepository.GetAllAsync();
         }
 
         public async Task<Word> GetRandomWordAsync()
         {
-            int amountOfWords = _context.Words.Count();
             Random random = new Random();
+            List<Word> allWords = await _wordRepository.GetAllAsync();
+
+            int amountOfWords = allWords.Count;
             int randomId = random.Next(1, amountOfWords);
-            return await _context.Words.FindAsync(randomId);
+
+            return await _wordRepository.GetByIdAsync(randomId);
         }
     }
 }

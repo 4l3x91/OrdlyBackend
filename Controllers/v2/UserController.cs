@@ -1,5 +1,5 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using OrdlyBackend.DTOs;
 using OrdlyBackend.Infrastructure.Data;
 using OrdlyBackend.Interfaces;
@@ -12,45 +12,45 @@ namespace OrdlyBackend.Controllers.v2;
 
 public class UserController : ControllerBase
 {
-    private OrdlyContext _context;
+    private IMapper _mapper;
     private IUserService _userService;
 
-    public UserController(OrdlyContext context, IUserService userService)
+    public UserController(IUserService userService, IMapper mapper)
     {
-        _context = context;
+        _mapper = mapper;
         _userService = userService;
     }
 
-    [HttpPost]
-    public async Task<ActionResult<User>> PostUser()
+    [HttpGet]
+    public async Task<ActionResult<BaseUserDTO>> GetNewUser()
     {
         var user = await _userService.CreateUserAsync();
-
-        return CreatedAtAction(nameof(GetUserByIdAsync), new { userId = user.UserId }, user);
+        var dto = new BaseUserDTO() { UserId = user.UserId, UserKey = user.UserKey };
+        return CreatedAtAction(nameof(GetUserByIdAsync), new { userId = user.UserId }, dto);
     }
 
     [HttpPut]
-    public async Task<ActionResult<User>> AddOrUpdateUser(User user)
+    public async Task<ActionResult<BaseUserDTO>> AddOrUpdateUser(User user)
     {
-        var updatedUser = await _userService.AddOrUpdateUserAsync(user);
-        return Ok(updatedUser);
+        await _userService.AddOrUpdateUserAsync(user);
+        return Ok(new BaseUserDTO() { UserId = user.UserId, UserKey = user.UserKey });
     }
 
     [HttpGet("{userId}")]
     [ActionName("GetUserByIdAsync")]
-    public async Task<ActionResult<User>> GetUserByIdAsync(int userId)
+    public async Task<ActionResult<BaseUserDTO>> GetUserByIdAsync(int userId)
     {
         var user = await _userService.GetUserByIdAsync(userId);
         if (user == null) return NoContent();
-        else return Ok(user);
+        else return Ok(new BaseUserDTO() { UserId = user.UserId, UserKey = user.UserKey });
     }
 
     [HttpGet("latestUser")]
     [ActionName("GetLatestUserByIdAsync")]
-    public async Task<ActionResult<User>> GetLatestUserByIdAsync()
+    public async Task<ActionResult<BaseUserDTO>> GetLatestUserAsync()
     {
-        var latestUser = await _userService.GetLatestUserByIdAsync();
-        return latestUser;
+        var user = await _userService.GetLatestUserAsync();
+        return user != null ? Ok(new BaseUserDTO() { UserId = user.UserId, UserKey = user.UserKey }) : NoContent();
     }
 
     [HttpPost("validate")]
