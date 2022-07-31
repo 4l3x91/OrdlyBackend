@@ -53,7 +53,7 @@ public class WorkerService : BackgroundService
                     choosenWord = await GetWordAsync(wordService, dailyWordService);
                 }
 
-                var dailyWord = new DailyWord() { WordId = choosenWord.WordId, Date = DateTime.Now.Date };
+                var dailyWord = new DailyWord() { WordId = choosenWord.Id, Date = DateTime.Now.Date };
 
                 await dailyWordService.AddNewDailyWordAsync(dailyWord);
             }
@@ -86,7 +86,7 @@ public class WorkerService : BackgroundService
     {
         var randomWord = await wordService.GetRandomWordAsync();
         var latestWords = await dailyWordService.GetLatestDailysAsync();
-        if (latestWords.Any(x => x.WordId == randomWord.WordId))
+        if (latestWords.Any(x => x.WordId == randomWord.Id))
         {
             return null;
         }

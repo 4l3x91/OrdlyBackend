@@ -23,7 +23,7 @@ namespace OrdlyBackend.Infrastructure.Data
             {
                 Word newWord = new Word
                 {
-                    WordId = 0,
+                    Id = 0,
                     Name = lines[i],
                     Category = "basic",
                     RowCreated = DateTime.Now,

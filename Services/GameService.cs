@@ -30,7 +30,7 @@ namespace OrdlyBackend.Services
                 var result = GenerateResult(request.Guess, GetWord(daily.WordId, allWords));
                 GuessResponse guessResonse = new()
                 {
-                    CurrentGameId = daily.DailyWordId,
+                    CurrentGameId = daily.Id,
                     Result = result
                 };
                 return guessResonse;
@@ -52,7 +52,7 @@ namespace OrdlyBackend.Services
                     var result = GenerateResult(request.Guess, GetWord(daily.WordId, allWords));
                     DTOs.v2.GuessResponse2 guessResonse = new()
                     {
-                        DailyGameId = daily.DailyWordId,
+                        DailyGameId = daily.Id,
                         Result = result,
                         isCompleted = result.All((x) => x == 2)
                     };
@@ -94,7 +94,7 @@ namespace OrdlyBackend.Services
 
             private string GetWord(int wordId, List<Word> allWords)
             {
-                return allWords.Find(x => x.WordId == wordId).Name;
+                return allWords.Find(x => x.Id == wordId).Name;
             }
 
             private bool ValidateGuess(string guess, List<Word> allWords)

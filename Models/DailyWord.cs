@@ -2,7 +2,7 @@
 {
     public class DailyWord : BaseEntity
     {
-        public int DailyWordId { get; set; }
+        public int Id { get; set; }
         public int WordId { get; set; }
         public DateTime Date { get; set; }
 

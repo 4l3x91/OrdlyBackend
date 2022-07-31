@@ -25,8 +25,8 @@ namespace OrdlyBackend.Services
 
             Guess guess = new()
             {
-                UserGameId = userGame.UserGameId,
-                WordId = allWords.Find(word => word.Name == request.Guess).WordId
+                UserGameId = userGame.Id,
+                WordId = allWords.Find(word => word.Name == request.Guess).Id
             };
 
             return await _guessRepository.AddAsync(guess) != null;
@@ -46,7 +46,7 @@ namespace OrdlyBackend.Services
             var userGame = await GetUserGameByUserIdAsync(request.UserId);
             if (userGame == null)
             {
-                userGame = await CreateNewUserGameAsync(request.UserId, daily.DailyWordId, guessResonse.isCompleted);
+                userGame = await CreateNewUserGameAsync(request.UserId, daily.Id, guessResonse.isCompleted);
             }
             else if (guessResonse.isCompleted)
             {

@@ -25,10 +25,10 @@ public class OrdlyController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<DailyGame2>> GetDailyGame()
     {
-        var dailyWord = await _context.DailyWords.OrderBy(x => x.DailyWordId).LastAsync();
+        var dailyWord = await _context.DailyWords.OrderBy(x => x.Id).LastAsync();
         var dailyGame = new DailyGame2()
         {
-            DailyGameId = dailyWord.DailyWordId
+            DailyGameId = dailyWord.Id
         };
 
         return Ok(dailyGame);

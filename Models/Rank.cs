@@ -2,7 +2,7 @@ namespace OrdlyBackend.Models
 {
     public class Rank : BaseEntity
     {
-        public int RankId { get; set; }
+        public int Id { get; set; }
         public string RankName { get; set; }
         public int MaxRating { get; set; }
 
