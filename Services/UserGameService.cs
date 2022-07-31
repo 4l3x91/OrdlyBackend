@@ -9,13 +9,16 @@ namespace OrdlyBackend.Services
 {
     public class UserGameService : IUserGameService
     {
-        OrdlyContext _context;
+        IRepository<UserGame> _userGameRepository;
+        IRepository<Guess> _guessRepository;
 
-        public UserGameService(OrdlyContext context)
+        public UserGameService(IRepository<UserGame> userGameRepository, IRepository<Guess> guessRepository)
         {
-            _context = context;
+            _userGameRepository = userGameRepository;
+            _guessRepository = guessRepository;
         }
 
+        //Skapa en GuessService och lägga där?
         public async Task<bool> AddGuessAsync(GuessRequest request, DailyWord daily, List<Word> allWords, GuessResponse2 guessResonse)
         {
             UserGame userGame = await GetUserGameAsync(request, daily, guessResonse);
@@ -26,14 +29,13 @@ namespace OrdlyBackend.Services
                 WordId = allWords.Find(word => word.Name == request.Guess).WordId
             };
 
-            await _context.Guesses.AddAsync(guess);
-            return await _context.SaveChangesAsync() > 0;
+            return await _guessRepository.AddAsync(guess) != null;
 
         }
 
         public async Task<UserGame> GetUserGameByUserIdAsync(int userId)
         {
-            return await _context.UserGames.FirstOrDefaultAsync(x => x.UserId == userId);
+            return await _userGameRepository.GetByIdAsync(userId);
         }
 
 
@@ -57,8 +59,7 @@ namespace OrdlyBackend.Services
         private async Task UpdateUserGameStatusAsync(bool isCompleted, UserGame userGame)
         {
             userGame.isCompleted = isCompleted;
-            _context.Update(userGame);
-            await _context.SaveChangesAsync();
+            await _userGameRepository.UpdateAsync(userGame);
         }
 
         private async Task<UserGame> CreateNewUserGameAsync(int userId, int dailyWordId, bool isCompleted)
@@ -70,9 +71,7 @@ namespace OrdlyBackend.Services
                 isCompleted = isCompleted,
             };
 
-            await _context.UserGames.AddAsync(newUG);
-            await _context.SaveChangesAsync();
-            return newUG;
+            return await _userGameRepository.AddAsync(newUG);
         }
     }
 }

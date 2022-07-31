@@ -1,6 +1,6 @@
 namespace OrdlyBackend.Models;
 
-public class Word
+public class Word : BaseEntity
 {
     public int WordId { get; set; }
     public string Name { get; set; }

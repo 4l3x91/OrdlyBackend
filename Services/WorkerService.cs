@@ -1,8 +1,6 @@
-using Microsoft.Extensions.Logging;
 using OrdlyBackend.Controllers;
 using OrdlyBackend.Interfaces;
 using OrdlyBackend.Models;
-using OrdlyBackend.Utilities;
 
 namespace OrdlyBackend.Services;
 
@@ -39,15 +37,17 @@ public class WorkerService : BackgroundService
     public async Task SetDailyWordAsync()
     {
         inProgress = true;
-
         if (_DateLastRun < DateTime.Now.Date)
         {
             using (var scope = _serviceScopeFactory.CreateScope())
             {
+
                 Word choosenWord = null;
                 var dailyWordService = scope.ServiceProvider.GetRequiredService<IDailyWordService>();
                 var wordService = scope.ServiceProvider.GetRequiredService<IWordService>();
 
+
+                var wordList = await wordService.GetAllWordsAsync();
                 while (choosenWord == null)
                 {
                     choosenWord = await GetWordAsync(wordService, dailyWordService);
@@ -57,10 +57,11 @@ public class WorkerService : BackgroundService
 
                 await dailyWordService.AddNewDailyWordAsync(dailyWord);
             }
+
             _DateLastRun = DateTime.Now.Date;
             _logger.LogInformation("WorkerService succefully added a new DailyWord at " + DateTime.Now);
         }
-              inProgress = false;
+        inProgress = false;
     }
 
     private async Task InitiateLastRun()
@@ -85,7 +86,7 @@ public class WorkerService : BackgroundService
     {
         var randomWord = await wordService.GetRandomWordAsync();
         var latestWords = await dailyWordService.GetLatestDailysAsync();
-        if(latestWords.Any(x=> x.WordId == randomWord.WordId))
+        if (latestWords.Any(x => x.WordId == randomWord.WordId))
         {
             return null;
         }

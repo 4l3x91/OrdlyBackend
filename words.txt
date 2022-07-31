@@ -691,7 +691,6 @@ kines
 såhär
 syren
 syrsa
-
 snärt
 skrål
 speed
@@ -2464,7 +2463,6 @@ trust
 psyke
 dosis
 skral
-
 modul
 klåpa
 nedre
@@ -2907,7 +2905,6 @@ vädra
 party
 yppig
 kraxa
-
 galej
 frank
 gnaga
@@ -3084,7 +3081,6 @@ jomen
 fiffa
 penal
 truga
-
 smuts
 gilja
 ivran

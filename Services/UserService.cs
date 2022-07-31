@@ -1,17 +1,15 @@
-﻿using Microsoft.EntityFrameworkCore;
-using OrdlyBackend.Infrastructure.Data;
-using OrdlyBackend.Interfaces;
+﻿using OrdlyBackend.Interfaces;
 using OrdlyBackend.Models;
 
 namespace OrdlyBackend.Services;
 
 public class UserService : IUserService
 {
-    OrdlyContext _context;
+    IRepository<User> _userRepository;
 
-    public UserService(OrdlyContext context)
+    public UserService(IRepository<User> userRepository)
     {
-        _context = context;
+        _userRepository = userRepository;
     }
 
     public async Task<User> CreateUserAsync()
@@ -20,9 +18,7 @@ public class UserService : IUserService
         {
             UserKey = Guid.NewGuid()
         };
-        _context.Users.Add(user);
-        await _context.SaveChangesAsync();
-        return user;
+        return await _userRepository.AddAsync(user);
     }
 
     public async Task<bool> ValidateUserAsync(int userId, Guid userKey)
@@ -33,22 +29,17 @@ public class UserService : IUserService
         
     public async Task<User> AddOrUpdateUserAsync(User user)
     {
-        if (_context.Users.Any(e => e.UserId == user.UserId)) _context.Entry(user).State = EntityState.Modified;
-        else _context.Entry(user).State = EntityState.Added;
-
-        await _context.SaveChangesAsync();
+        await _userRepository.UpdateAsync(user);
         return user;
     }
 
     public async Task<User> GetUserByIdAsync(int userId)
     {
-        var user = await _context.Users.FindAsync(userId);
-        return user;
+        return await _userRepository.GetByIdAsync(userId);
     }
 
-    public async Task<User> GetLatestUserByIdAsync()
+    public async Task<User> GetLatestUserAsync()
     {
-        var latestUser = await _context.Users.OrderByDescending(x => x.UserId).FirstOrDefaultAsync();
-        return latestUser;
+        return await _userRepository.GetLastAsync();
     }
 }

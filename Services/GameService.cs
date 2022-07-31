@@ -84,7 +84,7 @@ namespace OrdlyBackend.Services
             {
                 if (answer.Contains(guess[i]))
                 {
-                    answer[i] = '0';
+                    answer[Array.IndexOf(answer, guess[i])] = '0';
                     result[i] = 1;
                 }
             }

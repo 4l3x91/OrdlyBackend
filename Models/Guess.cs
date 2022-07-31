@@ -1,6 +1,6 @@
 ﻿namespace OrdlyBackend.Models;
 
-public class Guess
+public class Guess : BaseEntity
 {
     public int GuessId { get; set; }
     public int UserGameId { get; set; }

@@ -1,4 +1,5 @@
-﻿using OrdlyBackend.Models;
+﻿using OrdlyBackend.DTOs;
+using OrdlyBackend.Models;
 
 namespace OrdlyBackend.Interfaces
 {
@@ -6,7 +7,7 @@ namespace OrdlyBackend.Interfaces
     {
         Task<User> AddOrUpdateUserAsync(User user);
         Task<User> CreateUserAsync();
-        Task<User> GetLatestUserByIdAsync();
+        Task<User> GetLatestUserAsync();
         Task<User> GetUserByIdAsync(int userId);
         Task<bool> ValidateUserAsync(int userId, Guid userKey);
     }

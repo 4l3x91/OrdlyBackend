@@ -8,26 +8,28 @@ namespace OrdlyBackend.Services
 {
     public class DailyWordService : IDailyWordService
     {
-        OrdlyContext _context;
-        public DailyWordService(OrdlyContext context)
+        private const int amountOfPrev = 30;
+        IRepository<DailyWord> _dailyWordRepo;
+
+        public DailyWordService(IRepository<DailyWord> dailyWordRepo)
         {
-            _context = context;
+            _dailyWordRepo = dailyWordRepo;
         }
 
         public async Task<bool> AddNewDailyWordAsync(DailyWord newDaily)
         {
-            await _context.DailyWords.AddAsync(newDaily);
-            return await _context.SaveChangesAsync() > 0;
+            return await _dailyWordRepo.AddAsync(newDaily) != null;
         }
 
         public async Task<DailyWord> GetLatestDailyAsync()
         {
-            return await _context.DailyWords.OrderBy(x => x.DailyWordId).LastAsync();
+            return await _dailyWordRepo.GetLastAsync();
         }
 
         public async Task<List<DailyWord>> GetLatestDailysAsync()
         {
-            return await _context.DailyWords.OrderByDescending(x => x.DailyWordId).Take(30).ToListAsync();
+            var dailyWords = await _dailyWordRepo.GetAllAsync();
+            return dailyWords.OrderByDescending(x => x.DailyWordId).Take(amountOfPrev).ToList();
         }
 
     }

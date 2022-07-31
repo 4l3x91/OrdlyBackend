@@ -4,11 +4,15 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Newtonsoft.Json;
 using OrdlyBackend.Controllers;
+using OrdlyBackend.DTOs;
 using OrdlyBackend.HealthChecks;
 using OrdlyBackend.HealthChecks.DTOs;
+using OrdlyBackend.Infrastructure;
 using OrdlyBackend.Infrastructure.Data;
 using OrdlyBackend.Interfaces;
+using OrdlyBackend.Models;
 using OrdlyBackend.Services;
+using AutoMapper;
 using OrdlyBackend.Utilities;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -41,7 +45,9 @@ builder.Services.AddScoped<IGameService, GameService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserGameService, UserGameService>();
 builder.Services.AddScoped<IRankService, RankService>();
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddHostedService<WorkerService>();
+builder.Services.AddAutoMapper(typeof(Program));
 
 builder.Services.AddControllers();
 
@@ -83,11 +89,11 @@ app.MapHealthChecks("/health", new HealthCheckOptions
 
 // Uncomment to seed database with Words
 
-//using (var scope = app.Services.CreateScope())
-//{
-//    var services = scope.ServiceProvider;
-//    OrdlyContextSeed.Initialize(services);
-//}
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    OrdlyContextSeed.Initialize(services);
+}
 
 
 //Configure the HTTP request pipeline.
