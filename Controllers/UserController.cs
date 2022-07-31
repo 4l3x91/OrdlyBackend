@@ -1,53 +1,57 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using OrdlyBackend.Infrastructure.Data;
+using OrdlyBackend.DTOs;
+using OrdlyBackend.Interfaces;
 using OrdlyBackend.Models;
 
-namespace OrdlyBackend.Controllers;
+namespace OrdlyBackend.Controllers.v1;
 
 [ApiController]
 [Route("/api/v1/[controller]")]
 
 public class UserController : ControllerBase
 {
-    OrdlyContext _context;
+    private IUserService _userService;
 
-    public UserController(OrdlyContext context) => _context = context;
-
-    [HttpPost]
-    public async Task<ActionResult<User>> PostUser(User user)
+    public UserController(IUserService userService)
     {
-        _context.Users.Add(user);
-        await _context.SaveChangesAsync();
+        _userService = userService;
+    }
 
-        return CreatedAtAction(nameof(GetUserByIdAsync), new { userId = user.Id }, user);
+    [HttpGet]
+    public async Task<ActionResult<BaseUserDTO>> GetNewUser()
+    {
+        var user = await _userService.CreateUserAsync();
+        var dto = new BaseUserDTO() { UserId = user.Id, UserKey = user.UserKey };
+        return CreatedAtAction(nameof(GetUserByIdAsync), new { userId = user.Id }, dto);
     }
 
     [HttpPut]
-    public async Task<ActionResult<User>> AddOrUpdateUser(User user)
+    public async Task<ActionResult<BaseUserDTO>> AddOrUpdateUser(User user)
     {
-        if (_context.Users.Any(e => e.Id == user.Id)) _context.Entry(user).State = EntityState.Modified;
-        else _context.Entry(user).State = EntityState.Added;
-
-        await _context.SaveChangesAsync();
-        return Ok(user);
+        await _userService.AddOrUpdateUserAsync(user);
+        return Ok(new BaseUserDTO() { UserId = user.Id, UserKey = user.UserKey });
     }
 
     [HttpGet("{userId}")]
     [ActionName("GetUserByIdAsync")]
-    public async Task<ActionResult<User>> GetUserByIdAsync(int userId)
+    public async Task<ActionResult<BaseUserDTO>> GetUserByIdAsync(int userId)
     {
-        var user = await _context.Users.FindAsync(userId);
-        if (user == null) return NotFound();
-        else return Ok(user);
+        var user = await _userService.GetUserByIdAsync(userId);
+        if (user == null) return NoContent();
+        else return Ok(new BaseUserDTO() { UserId = user.Id, UserKey = user.UserKey });
     }
 
     [HttpGet("latestUser")]
     [ActionName("GetLatestUserByIdAsync")]
-
-    public async Task<ActionResult<User>> GetLatestUserByIdAsync()
+    public async Task<ActionResult<BaseUserDTO>> GetLatestUserAsync()
     {
-        var latestUser = await _context.Users.OrderByDescending(x => x.Id).FirstOrDefaultAsync();
-        return latestUser;
+        var user = await _userService.GetLatestUserAsync();
+        return user != null ? Ok(new BaseUserDTO() { UserId = user.Id, UserKey = user.UserKey }) : NoContent();
+    }
+
+    [HttpPost("validate")]
+    public async Task<ActionResult<bool>> ValidateUserAsync(BaseUserDTO user)
+    {
+        return Ok(await _userService.ValidateUserAsync(user.UserId, user.UserKey));
     }
 }

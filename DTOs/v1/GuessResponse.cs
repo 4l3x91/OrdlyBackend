@@ -1,6 +1,6 @@
-﻿namespace OrdlyBackend.DTOs.v2
+﻿namespace OrdlyBackend.DTOs.v1
 {
-    public class GuessResponse2 : DailyGame2
+    public class GuessResponse : DailyGameDTO
     {
         public int[] Result { get; set; }
         public bool isCompleted { get; set; }

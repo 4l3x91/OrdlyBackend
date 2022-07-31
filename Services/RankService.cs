@@ -3,6 +3,7 @@ using OrdlyBackend.Infrastructure.Data;
 using OrdlyBackend.Interfaces;
 using OrdlyBackend.Models;
 using OrdlyBackend.DTOs;
+using OrdlyBackend.DTOs.v1;
 
 namespace OrdlyBackend.Services;
 

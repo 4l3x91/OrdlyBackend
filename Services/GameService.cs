@@ -1,4 +1,4 @@
-﻿using OrdlyBackend.DTOs;
+﻿using OrdlyBackend.DTOs.v1;
 using OrdlyBackend.Interfaces;
 using OrdlyBackend.Models;
 
@@ -19,29 +19,7 @@ namespace OrdlyBackend.Services
             _userService = userService;
         }
 
-        //Guess for v1
-        public async Task<GuessResponse> GetGuessResultAsync(GuessRequest request)
-        {
-
-            DailyWord daily = await _dailyWordService.GetLatestDailyAsync();
-            List<Word> allWords = await _wordService.GetAllWordsAsync();
-            if (ValidateGuess(request.Guess, allWords))
-            {
-                var result = GenerateResult(request.Guess, GetWord(daily.WordId, allWords));
-                GuessResponse guessResonse = new()
-                {
-                    CurrentGameId = daily.Id,
-                    Result = result
-                };
-                return guessResonse;
-            }
-
-            return null;
-
-        }
-
-        //Guess for v2
-        public async Task<DTOs.v2.GuessResponse2> GetFullGuessResultAsync(GuessRequest request)
+        public async Task<GuessResponse> GetFullGuessResultAsync(GuessRequest request)
         {
             if (await _userService.ValidateUserAsync(request.UserId, request.UserKey))
             {
@@ -50,7 +28,7 @@ namespace OrdlyBackend.Services
                 if (ValidateGuess(request.Guess, allWords))
                 {
                     var result = GenerateResult(request.Guess, GetWord(daily.WordId, allWords));
-                    DTOs.v2.GuessResponse2 guessResonse = new()
+                    GuessResponse guessResonse = new()
                     {
                         DailyGameId = daily.Id,
                         Result = result,

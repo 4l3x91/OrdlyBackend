@@ -29,5 +29,11 @@ namespace OrdlyBackend.Services
 
             return await _wordRepository.GetByIdAsync(randomId);
         }
+
+        public async Task<Word> GetWordByIdAsync(int id)
+        {
+            Word word = await _wordRepository.GetByIdAsync(id);
+            return word;
+        }
     }
 }
