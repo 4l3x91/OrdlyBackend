@@ -8,6 +8,7 @@ namespace OrdlyBackend.Interfaces
         Task<bool> DeleteAsync(T entity);
         Task<List<T>> GetAllAsync();
         Task<T> GetByIdAsync(int Id);
+        Task<T> GetByUserIdAsync(int Id);
         Task<T> GetLastAsync();
         Task<bool> UpdateAsync(T entity);
     }

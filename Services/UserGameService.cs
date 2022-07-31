@@ -8,13 +8,16 @@ namespace OrdlyBackend.Services
 {
     public class UserGameService : IUserGameService
     {
+        ILogger<UserGameService> _logger;
         IRepository<UserGame> _userGameRepository;
         IRepository<Guess> _guessRepository;
 
-        public UserGameService(IRepository<UserGame> userGameRepository, IRepository<Guess> guessRepository)
+        public UserGameService(IRepository<UserGame> userGameRepository, IRepository<Guess> guessRepository, ILogger<UserGameService> logger)
         {
             _userGameRepository = userGameRepository;
             _guessRepository = guessRepository;
+            _logger = logger;
+
         }
 
         //Skapa en GuessService och lägga där?
@@ -34,17 +37,16 @@ namespace OrdlyBackend.Services
 
         public async Task<UserGame> GetUserGameByUserIdAsync(int userId)
         {
-            return await _userGameRepository.GetByIdAsync(userId);
+            return await _userGameRepository.GetByUserIdAsync(userId);
         }
-
-
-
 
         private async Task<UserGame> GetUserGameAsync(GuessRequest request, DailyWord daily, GuessResponse guessResonse)
         {
+
             var userGame = await GetUserGameByUserIdAsync(request.UserId);
             if (userGame == null)
             {
+                // _logger.LogInformation(userGame.Id.ToString());
                 userGame = await CreateNewUserGameAsync(request.UserId, daily.Id, guessResonse.isCompleted);
             }
             else if (guessResonse.isCompleted)

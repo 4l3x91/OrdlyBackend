@@ -55,7 +55,12 @@ public class Repository<T> : IRepository<T> where T : BaseEntity
     {
         return await _entities.FindAsync(Id);
     }
-
+    
+    public async Task<T> GetByUserIdAsync(int id)
+    {
+        var e = await _entities.Where(x => _entities.GetType().GetProperty("UserId").GetValue(x, null).ToString() == id.ToString()).ToListAsync();
+        return e.FirstOrDefault();
+    }
 
     private void Context_SavingChanges(object sender, SavingChangesEventArgs args)
     {
