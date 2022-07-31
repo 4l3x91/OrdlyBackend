@@ -4,15 +4,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Newtonsoft.Json;
 using OrdlyBackend.Controllers;
-using OrdlyBackend.DTOs;
 using OrdlyBackend.HealthChecks;
 using OrdlyBackend.HealthChecks.DTOs;
 using OrdlyBackend.Infrastructure;
 using OrdlyBackend.Infrastructure.Data;
 using OrdlyBackend.Interfaces;
-using OrdlyBackend.Models;
 using OrdlyBackend.Services;
-using AutoMapper;
 using OrdlyBackend.Utilities;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
