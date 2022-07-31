@@ -1,5 +1,5 @@
 using OrdlyBackend.DTOs;
-using OrdlyBackend.DTOs.v2;
+using OrdlyBackend.DTOs.v1;
 
 namespace OrdlyBackend.Interfaces
 {

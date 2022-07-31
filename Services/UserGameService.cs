@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using OrdlyBackend.DTOs;
-using OrdlyBackend.DTOs.v2;
+using OrdlyBackend.DTOs.v1;
 using OrdlyBackend.Infrastructure.Data;
 using OrdlyBackend.Interfaces;
 using OrdlyBackend.Models;
@@ -19,7 +18,7 @@ namespace OrdlyBackend.Services
         }
 
         //Skapa en GuessService och lägga där?
-        public async Task<bool> AddGuessAsync(GuessRequest request, DailyWord daily, List<Word> allWords, GuessResponse2 guessResonse)
+        public async Task<bool> AddGuessAsync(GuessRequest request, DailyWord daily, List<Word> allWords, GuessResponse guessResonse)
         {
             UserGame userGame = await GetUserGameAsync(request, daily, guessResonse);
 
@@ -41,7 +40,7 @@ namespace OrdlyBackend.Services
 
 
 
-        private async Task<UserGame> GetUserGameAsync(GuessRequest request, DailyWord daily, GuessResponse2 guessResonse)
+        private async Task<UserGame> GetUserGameAsync(GuessRequest request, DailyWord daily, GuessResponse guessResonse)
         {
             var userGame = await GetUserGameByUserIdAsync(request.UserId);
             if (userGame == null)

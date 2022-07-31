@@ -1,10 +1,9 @@
-﻿using OrdlyBackend.DTOs;
+﻿using OrdlyBackend.DTOs.v1;
 
 namespace OrdlyBackend.Interfaces
 {
     public interface IGameService
     {
-        public Task<GuessResponse> GetGuessResultAsync(GuessRequest request);
-        public Task<DTOs.v2.GuessResponse2> GetFullGuessResultAsync(GuessRequest request);
+        public Task<GuessResponse> GetFullGuessResultAsync(GuessRequest request);
     }
 }

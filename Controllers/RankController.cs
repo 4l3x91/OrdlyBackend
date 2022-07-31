@@ -1,23 +1,19 @@
 using Microsoft.AspNetCore.Mvc;
 using OrdlyBackend.DTOs;
-using OrdlyBackend.Infrastructure.Data;
-using OrdlyBackend.Models;
-using OrdlyBackend.Services;
 using OrdlyBackend.Interfaces;
+using OrdlyBackend.DTOs.v1;
 
-namespace OrdlyBackend.Controllers;
+namespace OrdlyBackend.Controllers.v1;
 
 [ApiController]
 [Route("/api/v1/[controller]")]
 
 public class RankController : ControllerBase
 {
-    private OrdlyContext _context;
     private IRankService _rankService;
 
-    public RankController(OrdlyContext context, IRankService rankService)
+    public RankController(IRankService rankService)
     {
-        _context = context;
         _rankService = rankService;
     }
 

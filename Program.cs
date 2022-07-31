@@ -1,4 +1,3 @@
-using Azure.Identity;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -10,10 +9,12 @@ using OrdlyBackend.Infrastructure;
 using OrdlyBackend.Infrastructure.Data;
 using OrdlyBackend.Interfaces;
 using OrdlyBackend.Services;
-using OrdlyBackend.Utilities;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+//Azure configurations
 //builder.Configuration.AddAzureKeyVault(AzureUtils.GetUri(), new DefaultAzureCredential());
+//builder.Services.AddApplicationInsightsTelemetry((options) => options.ConnectionString = builder.Configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"]);
 
 //var secret = AzureUtils.GetSecretFromVault("Ordly--DB");
 //builder.Services.AddDbContext<OrdlyContext>(options =>
@@ -26,13 +27,15 @@ Settings settings = new()
 {
     WordCategory = "all"
 };
+
 //Add HealthChecks
 builder.Services.AddHealthChecks()
    .AddCheck(
             "OrderingDB-check",
-            new SqlHealthCheck( "Data Source=Ordly.db"),//AzureUtils.GetSecretFromVault("Ordly--DB") ??
+            new SqlHealthCheck("Data Source=Ordly.db"),//AzureUtils.GetSecretFromVault("Ordly--DB") ??
             HealthStatus.Unhealthy,
             new string[] { "orderingdb" });
+
 // Add services to the container.
 builder.Services.AddCors();
 builder.Services.AddSingleton<Settings>();
@@ -61,7 +64,6 @@ builder.Services.AddSwaggerGen(config =>
     config.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
 });
 
-//builder.Services.AddApplicationInsightsTelemetry((options) => options.ConnectionString = builder.Configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"]);
 var app = builder.Build();
 
 app.MapHealthChecks("/health", new HealthCheckOptions
@@ -94,12 +96,12 @@ app.MapHealthChecks("/health", new HealthCheckOptions
 
 
 //Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseDeveloperExceptionPage();
-    app.UseSwagger();
-    app.UseSwaggerUI(c=> c.SwaggerEndpoint("./v1/swagger.json", "OrdlyAPI v1")); //originally "./swagger/v1/swagger.json");
-}
+//if (app.Environment.IsDevelopment())
+//{
+app.UseDeveloperExceptionPage();
+app.UseSwagger();
+app.UseSwaggerUI(c => c.SwaggerEndpoint("./v1/swagger.json", "OrdlyAPI v1")); //originally "./swagger/v1/swagger.json");
+//}
 
 app.UseHttpsRedirection();
 app.UseCors(x => x.AllowAnyMethod().AllowAnyHeader().AllowAnyOrigin());

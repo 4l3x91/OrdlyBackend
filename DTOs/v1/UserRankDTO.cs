@@ -1,10 +1,9 @@
-﻿namespace OrdlyBackend.DTOs.v2
+﻿namespace OrdlyBackend.DTOs.v1
 {
-    public class UserDTO
+    public class UserRankDTO
     {
         public int Id { get; set; }
         public int Rating { get; set; }
         public string Rank { get; set; }
-
     }
 }

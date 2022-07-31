@@ -1,35 +1,31 @@
 using Microsoft.AspNetCore.Mvc;
-using OrdlyBackend.DTOs;
 using OrdlyBackend.Infrastructure.Data;
-using OrdlyBackend.Models;
-using OrdlyBackend.Services;
 using OrdlyBackend.Interfaces;
+using OrdlyBackend.DTOs.v1;
 
-namespace OrdlyBackend.Controllers;
+namespace OrdlyBackend.Controllers.v1;
 
 [ApiController]
 [Route("/api/v1/[controller]")]
 
 public class OrdlyController : ControllerBase
 {
-    private OrdlyContext _context;
     private IGameService _gameService;
+    private IDailyWordService _dailyWordService;
 
-    public OrdlyController(OrdlyContext context, IGameService gameService)
+    public OrdlyController(OrdlyContext context, IGameService gameService, IDailyWordService dailyWordService)
     {
-        _context = context;
+        _dailyWordService = dailyWordService;
         _gameService = gameService;
     }
 
     [HttpGet]
-    public async Task<ActionResult<DailyGame>> GetDailyGame()
+    public async Task<ActionResult<DailyGameDTO>> GetDailyGame()
     {
-        var dailyWord = _context.DailyWords.OrderBy(x => x.Id).Last();
-        var word = await _context.Words.FindAsync(dailyWord.WordId);
-        var dailyGame = new DailyGame()
+        var lastDailyGame = await _dailyWordService.GetLatestDailyAsync();
+        var dailyGame = new DailyGameDTO()
         {
-            DailyGameId = dailyWord.Id,
-            Word = word.Name
+            DailyGameId = lastDailyGame.Id
         };
 
         return Ok(dailyGame);
@@ -38,8 +34,8 @@ public class OrdlyController : ControllerBase
     [HttpPost("guess")]
     public async Task<ActionResult<GuessResponse>> GetGuessResult([FromBody] GuessRequest request)
     {
-        var result = await _gameService.GetGuessResultAsync(request);
-        return Ok(result);
+        var result = await _gameService.GetFullGuessResultAsync(request);
+        return result != null ? Ok(result) : BadRequest();
     }
 
     [HttpGet("currentTime")]

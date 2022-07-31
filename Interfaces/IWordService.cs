@@ -6,5 +6,6 @@ namespace OrdlyBackend.Interfaces
     {
         Task<Word> GetRandomWordAsync();
         Task<List<Word>> GetAllWordsAsync();
+        Task<Word> GetWordByIdAsync(int id);
     }
 }
