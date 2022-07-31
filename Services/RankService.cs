@@ -51,7 +51,7 @@ public class RankService : IRankService
         var user = await _userService.GetUserByIdAsync(userRequest.UserId);
         if (user.UserKey == userRequest.UserKey)
         {
-            return await _context.UserRanks.FirstOrDefaultAsync(x => x.UserId == user.UserId);
+            return await _context.UserRanks.FirstOrDefaultAsync(x => x.UserId == user.Id);
         }
         return null;
     }

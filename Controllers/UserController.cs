@@ -20,13 +20,13 @@ public class UserController : ControllerBase
         _context.Users.Add(user);
         await _context.SaveChangesAsync();
 
-        return CreatedAtAction(nameof(GetUserByIdAsync), new { userId = user.UserId }, user);
+        return CreatedAtAction(nameof(GetUserByIdAsync), new { userId = user.Id }, user);
     }
 
     [HttpPut]
     public async Task<ActionResult<User>> AddOrUpdateUser(User user)
     {
-        if (_context.Users.Any(e => e.UserId == user.UserId)) _context.Entry(user).State = EntityState.Modified;
+        if (_context.Users.Any(e => e.Id == user.Id)) _context.Entry(user).State = EntityState.Modified;
         else _context.Entry(user).State = EntityState.Added;
 
         await _context.SaveChangesAsync();
@@ -47,7 +47,7 @@ public class UserController : ControllerBase
 
     public async Task<ActionResult<User>> GetLatestUserByIdAsync()
     {
-        var latestUser = await _context.Users.OrderByDescending(x => x.UserId).FirstOrDefaultAsync();
+        var latestUser = await _context.Users.OrderByDescending(x => x.Id).FirstOrDefaultAsync();
         return latestUser;
     }
 }

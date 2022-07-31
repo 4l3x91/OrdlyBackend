@@ -42,12 +42,11 @@ public class Repository<T> : IRepository<T> where T : BaseEntity
 
     public async Task<bool> UpdateAsync(T entity)
     {
-        //FIXME Fungerar ej!
-        //var idProperty = entity.GetType().GetProperty(entity.GetType().ToString()+"Id").GetValue(entity, null);
-        //var oldEntity = await _entities.FindAsync(idProperty);
-        //_context.ChangeTracker.Clear();
+        var idProperty = entity.GetType().GetProperty("Id").GetValue(entity, null);
+        var oldEntity = await _entities.FindAsync(idProperty);
+        _context.ChangeTracker.Clear();
 
-        //SetRowData(entity, oldEntity);
+        SetRowData(entity, oldEntity);
         _entities.Update(entity);
         return await _context.SaveChangesAsync() > 0;
     }

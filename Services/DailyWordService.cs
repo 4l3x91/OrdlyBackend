@@ -29,7 +29,7 @@ namespace OrdlyBackend.Services
         public async Task<List<DailyWord>> GetLatestDailysAsync()
         {
             var dailyWords = await _dailyWordRepo.GetAllAsync();
-            return dailyWords.OrderByDescending(x => x.DailyWordId).Take(amountOfPrev).ToList();
+            return dailyWords.OrderByDescending(x => x.Id).Take(amountOfPrev).ToList();
         }
 
     }

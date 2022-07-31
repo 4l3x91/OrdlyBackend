@@ -25,15 +25,15 @@ public class UserController : ControllerBase
     public async Task<ActionResult<BaseUserDTO>> GetNewUser()
     {
         var user = await _userService.CreateUserAsync();
-        var dto = new BaseUserDTO() { UserId = user.UserId, UserKey = user.UserKey };
-        return CreatedAtAction(nameof(GetUserByIdAsync), new { userId = user.UserId }, dto);
+        var dto = new BaseUserDTO() { UserId = user.Id, UserKey = user.UserKey };
+        return CreatedAtAction(nameof(GetUserByIdAsync), new { userId = user.Id }, dto);
     }
 
     [HttpPut]
     public async Task<ActionResult<BaseUserDTO>> AddOrUpdateUser(User user)
     {
         await _userService.AddOrUpdateUserAsync(user);
-        return Ok(new BaseUserDTO() { UserId = user.UserId, UserKey = user.UserKey });
+        return Ok(new BaseUserDTO() { UserId = user.Id, UserKey = user.UserKey });
     }
 
     [HttpGet("{userId}")]
@@ -42,7 +42,7 @@ public class UserController : ControllerBase
     {
         var user = await _userService.GetUserByIdAsync(userId);
         if (user == null) return NoContent();
-        else return Ok(new BaseUserDTO() { UserId = user.UserId, UserKey = user.UserKey });
+        else return Ok(new BaseUserDTO() { UserId = user.Id, UserKey = user.UserKey });
     }
 
     [HttpGet("latestUser")]
@@ -50,7 +50,7 @@ public class UserController : ControllerBase
     public async Task<ActionResult<BaseUserDTO>> GetLatestUserAsync()
     {
         var user = await _userService.GetLatestUserAsync();
-        return user != null ? Ok(new BaseUserDTO() { UserId = user.UserId, UserKey = user.UserKey }) : NoContent();
+        return user != null ? Ok(new BaseUserDTO() { UserId = user.Id, UserKey = user.UserKey }) : NoContent();
     }
 
     [HttpPost("validate")]
