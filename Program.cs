@@ -2,13 +2,13 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Newtonsoft.Json;
-using OrdlyBackend.Controllers;
 using OrdlyBackend.HealthChecks;
 using OrdlyBackend.HealthChecks.DTOs;
 using OrdlyBackend.Infrastructure;
 using OrdlyBackend.Infrastructure.Data;
 using OrdlyBackend.Interfaces;
 using OrdlyBackend.Services;
+using OrdlyBackend.Utilities;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -25,7 +25,8 @@ builder.Services.AddSqlite<OrdlyContext>(connectionString);
 
 Settings settings = new()
 {
-    WordCategory = "all"
+    WordCategory = "all",
+    ForceNewDaily = false
 };
 
 //Add HealthChecks
@@ -38,7 +39,7 @@ builder.Services.AddHealthChecks()
 
 // Add services to the container.
 builder.Services.AddCors();
-builder.Services.AddSingleton<Settings>();
+builder.Services.AddSingleton<Settings>(settings);
 builder.Services.AddScoped<IDailyWordService, DailyWordService>();
 builder.Services.AddScoped<IWordService, WordService>();
 builder.Services.AddScoped<IGameService, GameService>();

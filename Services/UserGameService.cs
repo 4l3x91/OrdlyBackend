@@ -20,7 +20,7 @@ namespace OrdlyBackend.Services
         //Skapa en GuessService och lägga där?
         public async Task<bool> AddGuessAsync(GuessRequest request, DailyWord daily, List<Word> allWords, GuessResponse guessResonse)
         {
-            UserGame userGame = await GetUserGameAsync(request, daily, guessResonse);
+            UserGame userGame = await GetUserGameAsync(request.UserId, daily.Id, guessResonse.isCompleted);
 
             Guess guess = new()
             {
@@ -32,27 +32,28 @@ namespace OrdlyBackend.Services
 
         }
 
-        public async Task<UserGame> GetUserGameByUserIdAsync(int userId)
+        public async Task<UserGame> FetchUserGameAsync(int userId, int dailyId)
         {
             var allUserGames = await _userGameRepository.GetAllAsync();
-            return allUserGames.FirstOrDefault(x => x.UserId == userId);
+            return allUserGames.FirstOrDefault(x => x.UserId == userId && x.DailyWordId == dailyId);
         }
 
-        private async Task<UserGame> GetUserGameAsync(GuessRequest request, DailyWord daily, GuessResponse guessResonse)
+        private async Task<UserGame> GetUserGameAsync(int userId, int dailyId, bool isCompleted)
         {
 
-            var userGame = await GetUserGameByUserIdAsync(request.UserId);
+            var userGame = await FetchUserGameAsync(userId, dailyId);
             if (userGame == null)
             {
-                userGame = await CreateNewUserGameAsync(request.UserId, daily.Id, guessResonse.isCompleted);
+                userGame = await CreateNewUserGameAsync(userId, dailyId, isCompleted);
             }
-            else if (guessResonse.isCompleted)
+            else if (isCompleted)
             {
-                await UpdateUserGameStatusAsync(guessResonse.isCompleted, userGame);
+                await UpdateUserGameStatusAsync(isCompleted, userGame);
             }
 
             return userGame;
         }
+
 
         private async Task UpdateUserGameStatusAsync(bool isCompleted, UserGame userGame)
         {

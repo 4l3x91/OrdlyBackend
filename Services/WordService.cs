@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using OrdlyBackend.Infrastructure.Data;
-using OrdlyBackend.Interfaces;
+﻿using OrdlyBackend.Interfaces;
 using OrdlyBackend.Models;
 
 namespace OrdlyBackend.Services
@@ -30,10 +28,29 @@ namespace OrdlyBackend.Services
             return await _wordRepository.GetByIdAsync(randomId);
         }
 
+
+
+        public async Task<Word> GetRandomWordByCategoryAsync(string category)
+        {
+            Random random = new Random();
+            List<Word> allWords = await GetWordsByCategoryAsync(category);
+
+            int amountOfWords = allWords.Count;
+            int randomNr = random.Next(0, amountOfWords-1);
+
+            return allWords[randomNr];
+        }
+
         public async Task<Word> GetWordByIdAsync(int id)
         {
             Word word = await _wordRepository.GetByIdAsync(id);
             return word;
+        }
+
+        public async Task<List<Word>> GetWordsByCategoryAsync(string category)
+        {
+            List<Word> words = await _wordRepository.GetAllAsync();
+            return words.Where(x => x.Category == category).ToList();
         }
     }
 }

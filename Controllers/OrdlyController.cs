@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using OrdlyBackend.Infrastructure.Data;
 using OrdlyBackend.Interfaces;
 using OrdlyBackend.DTOs.v1;
+using OrdlyBackend.Utilities;
 
 namespace OrdlyBackend.Controllers.v1;
 
@@ -12,9 +13,11 @@ public class OrdlyController : ControllerBase
 {
     private IGameService _gameService;
     private IDailyWordService _dailyWordService;
+    private Settings _settings;
 
-    public OrdlyController(OrdlyContext context, IGameService gameService, IDailyWordService dailyWordService)
+    public OrdlyController(OrdlyContext context, IGameService gameService, IDailyWordService dailyWordService, Settings settings)
     {
+        _settings = settings;
         _dailyWordService = dailyWordService;
         _gameService = gameService;
     }
@@ -43,5 +46,12 @@ public class OrdlyController : ControllerBase
     {
         var time = DateTime.Now;
         return Ok(time);
+    }
+
+    [HttpGet("ForceNewDaily")]
+    public ActionResult ForceNewWord()
+    {
+        _settings.ForceNewDaily = true;
+        return Ok();
     }
 }
