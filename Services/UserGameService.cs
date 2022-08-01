@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using OrdlyBackend.DTOs.v1;
-using OrdlyBackend.Infrastructure.Data;
+﻿using OrdlyBackend.DTOs.v1;
 using OrdlyBackend.Interfaces;
 using OrdlyBackend.Models;
 
@@ -8,13 +6,15 @@ namespace OrdlyBackend.Services
 {
     public class UserGameService : IUserGameService
     {
+        ILogger<UserGameService> _logger;
         IRepository<UserGame> _userGameRepository;
         IRepository<Guess> _guessRepository;
 
-        public UserGameService(IRepository<UserGame> userGameRepository, IRepository<Guess> guessRepository)
+        public UserGameService(IRepository<UserGame> userGameRepository, IRepository<Guess> guessRepository, ILogger<UserGameService> logger)
         {
             _userGameRepository = userGameRepository;
             _guessRepository = guessRepository;
+            _logger = logger;
         }
 
         //Skapa en GuessService och lägga där?
@@ -34,14 +34,13 @@ namespace OrdlyBackend.Services
 
         public async Task<UserGame> GetUserGameByUserIdAsync(int userId)
         {
-            return await _userGameRepository.GetByIdAsync(userId);
+            var allUserGames = await _userGameRepository.GetAllAsync();
+            return allUserGames.FirstOrDefault(x => x.UserId == userId);
         }
-
-
-
 
         private async Task<UserGame> GetUserGameAsync(GuessRequest request, DailyWord daily, GuessResponse guessResonse)
         {
+
             var userGame = await GetUserGameByUserIdAsync(request.UserId);
             if (userGame == null)
             {

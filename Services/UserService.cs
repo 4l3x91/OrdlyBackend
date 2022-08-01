@@ -23,10 +23,17 @@ public class UserService : IUserService
 
     public async Task<bool> ValidateUserAsync(int userId, Guid userKey)
     {
-        var user = await GetUserByIdAsync(userId);
-        return user.UserKey == userKey;
+        try
+        {
+            var user = await GetUserByIdAsync(userId);
+            return user.UserKey == userKey;
+        }
+        catch
+        {
+            return false;
+        }
     }
-        
+
     public async Task<User> AddOrUpdateUserAsync(User user)
     {
         await _userRepository.UpdateAsync(user);
