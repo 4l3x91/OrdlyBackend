@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using OrdlyBackend.DTOs.v1;
-using OrdlyBackend.Infrastructure.Data;
+﻿using OrdlyBackend.DTOs.v1;
 using OrdlyBackend.Interfaces;
 using OrdlyBackend.Models;
 
@@ -17,7 +15,6 @@ namespace OrdlyBackend.Services
             _userGameRepository = userGameRepository;
             _guessRepository = guessRepository;
             _logger = logger;
-
         }
 
         //Skapa en GuessService och lägga där?
@@ -37,7 +34,8 @@ namespace OrdlyBackend.Services
 
         public async Task<UserGame> GetUserGameByUserIdAsync(int userId)
         {
-            return await _userGameRepository.GetByUserIdAsync(userId);
+            var allUserGames = await _userGameRepository.GetAllAsync();
+            return allUserGames.FirstOrDefault(x => x.UserId == userId);
         }
 
         private async Task<UserGame> GetUserGameAsync(GuessRequest request, DailyWord daily, GuessResponse guessResonse)
@@ -46,7 +44,6 @@ namespace OrdlyBackend.Services
             var userGame = await GetUserGameByUserIdAsync(request.UserId);
             if (userGame == null)
             {
-                // _logger.LogInformation(userGame.Id.ToString());
                 userGame = await CreateNewUserGameAsync(request.UserId, daily.Id, guessResonse.isCompleted);
             }
             else if (guessResonse.isCompleted)

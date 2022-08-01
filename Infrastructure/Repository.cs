@@ -9,9 +9,11 @@ public class Repository<T> : IRepository<T> where T : BaseEntity
 {
     private readonly OrdlyContext _context;
     private readonly DbSet<T> _entities;
+    ILogger<Repository<T>> _logger;
 
-    public Repository(OrdlyContext context)
+    public Repository(OrdlyContext context, ILogger<Repository<T>> logger)
     {
+        _logger = logger;
         _context = context;
         _entities = context.Set<T>();
         _context.SavingChanges += Context_SavingChanges;
@@ -54,12 +56,6 @@ public class Repository<T> : IRepository<T> where T : BaseEntity
     public async Task<T> GetByIdAsync(int Id)
     {
         return await _entities.FindAsync(Id);
-    }
-    
-    public async Task<T> GetByUserIdAsync(int id)
-    {
-        var e = await _entities.Where(x => _entities.GetType().GetProperty("UserId").GetValue(x, null).ToString() == id.ToString()).ToListAsync();
-        return e.FirstOrDefault();
     }
 
     private void Context_SavingChanges(object sender, SavingChangesEventArgs args)
