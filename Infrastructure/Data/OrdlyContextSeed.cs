@@ -12,7 +12,31 @@ namespace OrdlyBackend.Infrastructure.Data
                     DbContextOptions<OrdlyContext>>()))
             {
                 if (context.Words.Count() == 0) await GenerateWords(context);   // DB has been seeded
+                if (context.Ranks.Count() == 0) await GenerateRanks(context);   // DB has been seeded
             }
+        }
+
+        private static async Task GenerateRanks(OrdlyContext context)
+        {
+            string[] lines = File.ReadAllLines("ranks.txt");
+            List<Rank> ranks = new List<Rank>();
+
+            for (int i = 0; i < lines.Length; i++)
+            {
+                Rank newRank = new Rank
+                {
+                    Id = 0,
+                    RankName = lines[i],
+                    MaxRating = i == lines.Length - 1 ? 2147483647 : (i + 1) * 100 + 99,
+                    RowCreated = DateTime.Now,
+                    RowModified = DateTime.Now,
+                    RowVersion = 1
+                };
+                ranks.Add(newRank);
+            Console.WriteLine(newRank.RankName);
+            }
+            await context.AddRangeAsync(ranks);
+            await context.SaveChangesAsync();
         }
         private static async Task GenerateWords(OrdlyContext context)
         {
@@ -31,11 +55,11 @@ namespace OrdlyBackend.Infrastructure.Data
                     RowVersion = 1
                 };
                 words.Add(newWord);
-                
+
             }
             await context.AddRangeAsync(words);
             await context.SaveChangesAsync();
         }
-    
+
     }
 }

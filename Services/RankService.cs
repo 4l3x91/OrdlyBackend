@@ -18,10 +18,20 @@ public class RankService : IRankService
         _userService = userService;
     }
 
+    public async Task<UserRank> AddOrUpdateUserRankAsync(UserRank userRequest)
+    {
+        _context.Update(userRequest);
+        await _context.SaveChangesAsync();
+        return userRequest;
+    }
+
     public async Task<UserRankDTO> AddRatingAsync(BaseUserDTO userRequest)
     {
         var userRank = await GetUserRankAsync(userRequest);
-        if (userRank == null) return null;
+        if (userRank == null)
+        {
+            await AddOrUpdateUserRankAsync(userRank);
+        };
 
         // TODO: Calculate correct rating
         userRank.Rating += 10;

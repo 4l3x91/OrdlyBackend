@@ -89,11 +89,11 @@ app.MapHealthChecks("/health", new HealthCheckOptions
 
 // Uncomment to seed database with Words
 
-//using (var scope = app.Services.CreateScope())
-//{
-//    var services = scope.ServiceProvider;
-//    OrdlyContextSeed.Initialize(services);
-//}
+using (var scope = app.Services.CreateScope())
+{
+   var services = scope.ServiceProvider;
+   OrdlyContextSeed.Initialize(services);
+}
 
 
 //Configure the HTTP request pipeline.

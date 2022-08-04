@@ -1,5 +1,6 @@
 using OrdlyBackend.DTOs;
 using OrdlyBackend.DTOs.v1;
+using OrdlyBackend.Models;
 
 namespace OrdlyBackend.Interfaces
 {
@@ -7,5 +8,6 @@ namespace OrdlyBackend.Interfaces
     {
         Task<UserRankDTO> AddRatingAsync(BaseUserDTO baseUserDTO);
         Task<UserRankDTO> SubtractRatingAsync(BaseUserDTO baseUserDTO);
+        Task<UserRank> AddOrUpdateUserRankAsync(UserRank userRank);
     }
 }
