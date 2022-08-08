@@ -1,6 +1,6 @@
-using OrdlyBackend.Controllers;
 using OrdlyBackend.Interfaces;
 using OrdlyBackend.Models;
+using OrdlyBackend.Utilities;
 
 namespace OrdlyBackend.Services;
 
@@ -30,38 +30,49 @@ public class WorkerService : BackgroundService
         while (!stoppingToken.IsCancellationRequested)
         {
             if (!inProgress) await SetDailyWordAsync();
-            await Task.Delay(15000);
+            await Task.Delay(5000);
         }
     }
 
     public async Task SetDailyWordAsync()
     {
         inProgress = true;
-        if (_DateLastRun < DateTime.Now.Date)
+        if (_DateLastRun < DateTime.Now.Date || _settings.ForceNewDaily)
         {
             using (var scope = _serviceScopeFactory.CreateScope())
             {
-
-                Word choosenWord = null;
                 var dailyWordService = scope.ServiceProvider.GetRequiredService<IDailyWordService>();
                 var wordService = scope.ServiceProvider.GetRequiredService<IWordService>();
 
+                var choosenWord = await GetWordAsync(dailyWordService, wordService);
 
-                var wordList = await wordService.GetAllWordsAsync();
-                while (choosenWord == null)
+                var dailyWord = new DailyWord()
                 {
-                    choosenWord = await GetWordAsync(wordService, dailyWordService);
-                }
-
-                var dailyWord = new DailyWord() { WordId = choosenWord.Id, Date = DateTime.Now.Date };
+                    WordId = choosenWord.Id,
+                    Date = DateTime.Now.Date
+                };
 
                 await dailyWordService.AddNewDailyWordAsync(dailyWord);
             }
 
             _DateLastRun = DateTime.Now.Date;
-            _logger.LogInformation("WorkerService succefully added a new DailyWord at " + DateTime.Now);
+            _logger.LogInformation("WorkerService successfully added a new DailyWord at " + DateTime.Now);
+            _settings.ForceNewDaily = false;
         }
         inProgress = false;
+    }
+
+    private async Task<Word> GetWordAsync(IDailyWordService dailyWordService, IWordService wordService)
+    {
+        Word choosenWord = null;
+
+        var wordList = await wordService.GetAllWordsAsync();
+        while (choosenWord == null)
+        {
+            if (_settings.WordCategory == "all") choosenWord = await GetAnyWordAsync(wordService, dailyWordService);
+            else choosenWord = await GetWordByCategoryAsync(wordService, dailyWordService);
+        }
+        return choosenWord;
     }
 
     private async Task InitiateLastRun()
@@ -69,7 +80,8 @@ public class WorkerService : BackgroundService
         using (var scope = _serviceScopeFactory.CreateScope())
         {
             var dailyWordService = scope.ServiceProvider.GetRequiredService<IDailyWordService>();
-            var lastDailys = await dailyWordService.GetLatestDailysAsync();
+            var lastDailys = await dailyWordService.GetLatestDailiesAsync();
+
             if (lastDailys.Count != 0)
             {
                 var lastDaily = lastDailys.First();
@@ -82,14 +94,25 @@ public class WorkerService : BackgroundService
         }
     }
 
-    private async Task<Word> GetWordAsync(IWordService wordService, IDailyWordService dailyWordService)
+    private async Task<Word> GetAnyWordAsync(IWordService wordService, IDailyWordService dailyWordService)
     {
         var randomWord = await wordService.GetRandomWordAsync();
-        var latestWords = await dailyWordService.GetLatestDailysAsync();
-        if (latestWords.Any(x => x.WordId == randomWord.Id))
+        return await isDuplicatedWordAsync(dailyWordService, randomWord.Id) ? null : randomWord;
+    }
+
+    private async Task<Word> GetWordByCategoryAsync(IWordService wordService, IDailyWordService dailyWordService)
+    {
+        var randomWord = await wordService.GetRandomWordByCategoryAsync(_settings.WordCategory);
+        return await isDuplicatedWordAsync(dailyWordService, randomWord.Id) ? null : randomWord;
+    }
+
+    private async Task<bool> isDuplicatedWordAsync(IDailyWordService dailyWordService, int id)
+    {
+        var latestWords = await dailyWordService.GetLatestDailiesAsync();
+        if (latestWords.Any(x => x.WordId == id))
         {
-            return null;
+            return true;
         }
-        return randomWord;
+        return false;
     }
 }

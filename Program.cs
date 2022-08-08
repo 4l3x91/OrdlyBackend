@@ -2,13 +2,13 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Newtonsoft.Json;
-using OrdlyBackend.Controllers;
 using OrdlyBackend.HealthChecks;
 using OrdlyBackend.HealthChecks.DTOs;
 using OrdlyBackend.Infrastructure;
 using OrdlyBackend.Infrastructure.Data;
 using OrdlyBackend.Interfaces;
 using OrdlyBackend.Services;
+using OrdlyBackend.Utilities;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -25,7 +25,8 @@ builder.Services.AddSqlite<OrdlyContext>(connectionString);
 
 Settings settings = new()
 {
-    WordCategory = "all"
+    WordCategory = "all",
+    ForceNewDaily = false
 };
 
 //Add HealthChecks
@@ -38,16 +39,19 @@ builder.Services.AddHealthChecks()
 
 // Add services to the container.
 builder.Services.AddCors();
-builder.Services.AddSingleton<Settings>();
+builder.Services.AddSingleton(settings);
 builder.Services.AddScoped<IDailyWordService, DailyWordService>();
 builder.Services.AddScoped<IWordService, WordService>();
 builder.Services.AddScoped<IGameService, GameService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserGameService, UserGameService>();
+builder.Services.AddScoped<IGuessService, GuessService>();
 builder.Services.AddScoped<IRankService, RankService>();
+builder.Services.AddTransient<IObjectBuilder, ObjectBuilder>();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddHostedService<WorkerService>();
-builder.Services.AddAutoMapper(typeof(Program));
+
+
 
 builder.Services.AddControllers();
 
