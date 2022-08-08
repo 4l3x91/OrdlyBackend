@@ -10,15 +10,15 @@ namespace OrdlyBackend.Services
         private IWordService _wordService;
         private IUserGameService _userGameService;
         private IUserService _userService;
-        private IObjectBuilder _mapper;
+        private IObjectBuilder _objectBuilder;
 
-        public GameService(IDailyWordService dailyWordService, IWordService wordService, IUserGameService userGameService, IUserService userService, IObjectBuilder mapper)
+        public GameService(IDailyWordService dailyWordService, IWordService wordService, IUserGameService userGameService, IUserService userService, IObjectBuilder objectBuilder)
         {
             _wordService = wordService;
             _dailyWordService = dailyWordService;
             _userGameService = userGameService;
             _userService = userService;
-            _mapper = mapper;
+            _objectBuilder = objectBuilder;
         }
 
         public async Task<GuessResponse> GetFullGuessResultAsync(GuessRequest request)
@@ -30,7 +30,7 @@ namespace OrdlyBackend.Services
 
                 if (ValidateGuess(request.Guess, allWords))
                 {
-                    var result = _mapper.GenerateResult(request.Guess, GetWordById(daily.WordId, allWords));
+                    var result = _objectBuilder.GenerateResult(request.Guess, GetWordById(daily.WordId, allWords));
                     GuessResponse guessResonse = new()
                     {
                         DailyGameId = daily.Id,
@@ -41,7 +41,7 @@ namespace OrdlyBackend.Services
                     var success = await _userGameService.CreateGuessAsync(request, daily, allWords, guessResonse);
                     
                     var usersAllGames = await _userGameService.GetAllUserGamesAsync().ContinueWith(task => task.Result.Where(x => x.UserId == request.UserId).ToList());
-                    guessResonse.History = await _mapper.GetUserHistoryAsync(usersAllGames);
+                    guessResonse.History = await _objectBuilder.GetUserHistoryAsync(usersAllGames);
 
                     if (!success)
                     {

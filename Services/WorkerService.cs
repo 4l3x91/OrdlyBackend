@@ -9,10 +9,10 @@ public class WorkerService : BackgroundService
     private DateTime? _DateLastRun;
     private bool inProgress = false;
     private ILogger<WorkerService> _logger;
-    private Settings _settings;
+    private OrdlySettings _settings;
 
     private readonly IServiceScopeFactory _serviceScopeFactory;
-    public WorkerService(IServiceScopeFactory serviceScopeFactory, ILogger<WorkerService> logger, Settings settings)
+    public WorkerService(IServiceScopeFactory serviceScopeFactory, ILogger<WorkerService> logger, OrdlySettings settings)
     {
         _logger = logger;
         _settings = settings;

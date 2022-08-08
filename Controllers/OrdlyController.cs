@@ -13,9 +13,9 @@ public class OrdlyController : ControllerBase
 {
     private IGameService _gameService;
     private IDailyWordService _dailyWordService;
-    private Settings _settings;
+    private OrdlySettings _settings;
 
-    public OrdlyController(OrdlyContext context, IGameService gameService, IDailyWordService dailyWordService, Settings settings)
+    public OrdlyController(OrdlyContext context, IGameService gameService, IDailyWordService dailyWordService, OrdlySettings settings)
     {
         _settings = settings;
         _dailyWordService = dailyWordService;

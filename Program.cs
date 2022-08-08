@@ -23,7 +23,7 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("OrdlyContext") ?? "Data Source=Ordly.db";
 builder.Services.AddSqlite<OrdlyContext>(connectionString);
 
-Settings settings = new()
+OrdlySettings settings = new()
 {
     WordCategory = "all",
     ForceNewDaily = false
