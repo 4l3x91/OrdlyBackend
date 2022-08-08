@@ -39,16 +39,19 @@ builder.Services.AddHealthChecks()
 
 // Add services to the container.
 builder.Services.AddCors();
-builder.Services.AddSingleton<Settings>(settings);
+builder.Services.AddSingleton(settings);
 builder.Services.AddScoped<IDailyWordService, DailyWordService>();
 builder.Services.AddScoped<IWordService, WordService>();
 builder.Services.AddScoped<IGameService, GameService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserGameService, UserGameService>();
+builder.Services.AddScoped<IGuessService, GuessService>();
 builder.Services.AddScoped<IRankService, RankService>();
+builder.Services.AddTransient<IObjectBuilder, ObjectBuilder>();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddHostedService<WorkerService>();
-builder.Services.AddAutoMapper(typeof(Program));
+
+
 
 builder.Services.AddControllers();
 

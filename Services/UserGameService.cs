@@ -1,4 +1,5 @@
 ﻿using OrdlyBackend.DTOs.v1;
+using OrdlyBackend.DTOs.v1.UserGameDTOs;
 using OrdlyBackend.Interfaces;
 using OrdlyBackend.Models;
 
@@ -8,28 +9,36 @@ namespace OrdlyBackend.Services
     {
         ILogger<UserGameService> _logger;
         IRepository<UserGame> _userGameRepository;
-        IRepository<Guess> _guessRepository;
+        IGuessService _guessService;
 
-        public UserGameService(IRepository<UserGame> userGameRepository, IRepository<Guess> guessRepository, ILogger<UserGameService> logger)
+        public UserGameService(IRepository<UserGame> userGameRepository, IGuessService guessService, ILogger<UserGameService> logger)
         {
             _userGameRepository = userGameRepository;
-            _guessRepository = guessRepository;
+            _guessService = guessService;
             _logger = logger;
         }
 
-        //Skapa en GuessService och lägga där?
-        public async Task<bool> AddGuessAsync(GuessRequest request, DailyWord daily, List<Word> allWords, GuessResponse guessResonse)
+
+        public async Task<List<UserGame>> GetAllUserGamesAsync()
+        {
+           return await _userGameRepository.GetAllAsync();
+        }
+
+        public async Task<bool> CreateGuessAsync(GuessRequest request, DailyWord daily, List<Word> allWords, GuessResponse guessResonse)
         {
             UserGame userGame = await GetUserGameAsync(request.UserId, daily.Id, guessResonse.isCompleted);
 
-            Guess guess = new()
+            if (!userGame.isCompleted)
             {
-                UserGameId = userGame.Id,
-                WordId = allWords.Find(word => word.Name == request.Guess).Id
-            };
+                Guess guess = new()
+                {
+                    UserGameId = userGame.Id,
+                    WordId = allWords.Find(word => word.Name == request.Guess).Id
+                };
 
-            return await _guessRepository.AddAsync(guess) != null;
-
+                return await _guessService.AddGuessAsync(guess);
+            }
+            return false;
         }
 
         public async Task<UserGame> FetchUserGameAsync(int userId, int dailyId)
@@ -72,5 +81,7 @@ namespace OrdlyBackend.Services
 
             return await _userGameRepository.AddAsync(newUG);
         }
+
+        
     }
 }

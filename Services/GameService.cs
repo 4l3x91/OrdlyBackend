@@ -10,13 +10,15 @@ namespace OrdlyBackend.Services
         private IWordService _wordService;
         private IUserGameService _userGameService;
         private IUserService _userService;
+        private IObjectBuilder _mapper;
 
-        public GameService(IDailyWordService dailyWordService, IWordService wordService, IUserGameService userGameService, IUserService userService)
+        public GameService(IDailyWordService dailyWordService, IWordService wordService, IUserGameService userGameService, IUserService userService, IObjectBuilder mapper)
         {
             _wordService = wordService;
             _dailyWordService = dailyWordService;
             _userGameService = userGameService;
             _userService = userService;
+            _mapper = mapper;
         }
 
         public async Task<GuessResponse> GetFullGuessResultAsync(GuessRequest request)
@@ -25,9 +27,10 @@ namespace OrdlyBackend.Services
             {
                 var daily = await _dailyWordService.GetLatestDailyAsync();
                 var allWords = await _wordService.GetAllWordsAsync();
+
                 if (ValidateGuess(request.Guess, allWords))
                 {
-                    var result = GenerateResult(request.Guess, GetWord(daily.WordId, allWords));
+                    var result = _mapper.GenerateResult(request.Guess, GetWordById(daily.WordId, allWords));
                     GuessResponse guessResonse = new()
                     {
                         DailyGameId = daily.Id,
@@ -35,9 +38,15 @@ namespace OrdlyBackend.Services
                         isCompleted = result.All((x) => x == 2)
                     };
 
-                    var success = await _userGameService.AddGuessAsync(request, daily, allWords, guessResonse);
+                    var success = await _userGameService.CreateGuessAsync(request, daily, allWords, guessResonse);
+                    
+                    var usersAllGames = await _userGameService.GetAllUserGamesAsync().ContinueWith(task => task.Result.Where(x => x.UserId == request.UserId).ToList());
+                    guessResonse.History = await _mapper.GetUserHistoryAsync(usersAllGames);
 
-                    if (!success) return null;
+                    if (!success)
+                    {
+                        guessResonse.Result = null;
+                    }
                     else return guessResonse;
                 }
             }
@@ -45,39 +54,14 @@ namespace OrdlyBackend.Services
             return null;
         }
 
-        private int[] GenerateResult(string guess, string dailyWord)
+        private string GetWordById(int wordId, List<Word> allWords)
         {
-            var answer = dailyWord.ToCharArray();
-            var result = new int[answer.Length];
-            for (int i = 0; i < answer.Length; i++)
-            {
-                if (guess[i] == answer[i])
-                {
-                    answer[i] = '0';
-                    result[i] = 2;
-                }
-            }
-
-            for (int i = 0; i < answer.Length; i++)
-            {
-                if (answer.Contains(guess[i]))
-                {
-                    answer[Array.IndexOf(answer, guess[i])] = '0';
-                    result[i] = 1;
-                }
-            }
-
-            return result;
+            return allWords.Find(x => x.Id == wordId).Name;
         }
 
-            private string GetWord(int wordId, List<Word> allWords)
-            {
-                return allWords.Find(x => x.Id == wordId).Name;
-            }
-
-            private bool ValidateGuess(string guess, List<Word> allWords)
-            {
-                return allWords.Any(word => word.Name == guess);
-            }
+        private bool ValidateGuess(string guess, List<Word> allWords)
+        {
+            return allWords.Any(word => word.Name == guess);
         }
     }
+}

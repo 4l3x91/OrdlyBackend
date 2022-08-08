@@ -1,4 +1,5 @@
-﻿using OrdlyBackend.Interfaces;
+﻿using OrdlyBackend.DTOs.v1.UserGameDTOs;
+using OrdlyBackend.Interfaces;
 using OrdlyBackend.Models;
 
 namespace OrdlyBackend.Services;
